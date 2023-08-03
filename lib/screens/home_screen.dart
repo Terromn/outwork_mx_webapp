@@ -71,12 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ]),
             ),
           ),
-          const SizedBox(height: TeAppThemeData.contentMargin),
           Expanded(
               child: SingleChildScrollView(
             child: Column(children: [
+              const SizedBox(height: 12),
               SizedBox(
-                height: TeMediaQuery.getPercentageHeight(context, 45),
+                height: TeMediaQuery.getPercentageHeight(context, 65),
                 child: Column(
                   children: [
                     Padding(
@@ -118,15 +118,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         activeBackgroundDayColor: TeAppColorPalette.green,
                         dotsColor: TeAppColorPalette.black,
                         selectableDayPredicate: null,
-                        locale: 'en_ISO',
+                        locale: 'es_ISO',
                       ),
                     ),
                     Padding(
                         padding: const EdgeInsets.only(
-                            left: TeAppThemeData.contentMargin,
-                            right: TeAppThemeData.contentMargin),
+                          left: TeAppThemeData.contentMargin,
+                          right: TeAppThemeData.contentMargin,
+                        ),
                         child: SizedBox(
-                          height: TeMediaQuery.getPercentageHeight(context, 25),
+                          height:
+                              TeMediaQuery.getPercentageHeight(context, 42.5),
                           child: StreamBuilder<QuerySnapshot>(
                             stream: _streamClasses,
                             builder: (context, snapshot) {
@@ -139,11 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                print("Fetching Data...");
-
                                 return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                    child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                TeAppColorPalette.green)));
                               }
                               final List<QueryDocumentSnapshot> documents =
                                   snapshot.data!.docs;

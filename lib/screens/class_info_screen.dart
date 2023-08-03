@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
+import 'package:intl/intl.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 
 class ClassInformationScreen extends StatelessWidget {
@@ -14,7 +15,7 @@ class ClassInformationScreen extends StatelessWidget {
     double contentMargin = 32;
 
     return Scaffold(
-        appBar: AppBar(title: Text(classInfo.classType)),
+        appBar: AppBar(title: Text(classInfo.classType), toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)),
         body: Padding(
           padding: EdgeInsets.all(contentMargin),
           child: Column(
@@ -60,11 +61,11 @@ class ClassInformationScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const DoubleText(
-                                type: "Dia/", title: "17 de Junio"),
+                            DoubleText(
+                                type: "Dia/", title: DateFormat("d 'de' MMMM", 'es').format(classInfo.classDate)),
                             DoubleText(
                                 type: "Duracion/",
-                                title: "${classInfo.classDuration} Hora"),
+                                title: classInfo.classDuration != 1 ? "${classInfo.classDuration} Horas" : "${classInfo.classDuration} Hora"),
                             DoubleText(
                                 type: "Capacidad/",
                                 title: "${classInfo.classLimitSpaces} Lugares"),

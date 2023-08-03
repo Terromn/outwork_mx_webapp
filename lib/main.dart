@@ -6,13 +6,17 @@ import 'package:outwork_web_app/screens/home_screen.dart';
 
 import 'firebase_options.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+
+    initializeDateFormatting('es_MX', null).then((_) => runApp(const MyApp()));
+
 }
 
 class MyApp extends StatelessWidget {

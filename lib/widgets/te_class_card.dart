@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
+import 'package:intl/intl.dart';
 import 'package:outwork_web_app/screens/class_info_screen.dart';
 
 class TeClassCard extends StatelessWidget {
@@ -32,7 +33,7 @@ class TeClassCard extends StatelessWidget {
         child: ListTile(
           leading: _SquaredLeadingIcon(),
           title: Text(classInfo.classType),
-          subtitle: Text("8:30 - ${classInfo.classCoach}"),
+          subtitle: Text("${DateFormat('h:mm a').format(classInfo.classDate)} - ${classInfo.classCoach}"),
         ),
       ),
     );
@@ -60,9 +61,9 @@ class _SquaredLeadingIcon extends StatelessWidget {
             height: 18.0,
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(100),
-                  bottomRight: Radius.circular(100),
-                  topRight: Radius.circular(100),
+                  bottomLeft: Radius.circular(200),
+                  bottomRight: Radius.circular(200),
+                  topRight: Radius.circular(200),
                   topLeft: Radius.circular(0)),
               color: TeAppColorPalette.green,
             ),
