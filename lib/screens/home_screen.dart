@@ -24,10 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
+    _selectedDate = DateTime.now().add(const Duration(days: 1));
+
     _streamClasses = _referenceClasses.snapshots();
   }
 
   late Stream<QuerySnapshot> _streamClasses;
+
+  late DateTime _selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -105,11 +109,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12.0),
                       child: CalendarTimeline(
-                        initialDate: DateTime(2020, 4, 20),
-                        firstDate: DateTime(2019, 1, 15),
-                        lastDate: DateTime(2020, 11, 20),
+                        initialDate: _selectedDate,
+                        firstDate: DateTime.now(),
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 365 * 4)),
                         // ignore: avoid_print
-                        onDateSelected: (date) => print(date),
+                        onDateSelected: (date) {
+                          setState(() {
+                            _selectedDate = date;
+                          });
+                        },
                         leftMargin: TeAppThemeData.contentMargin,
                         dayNameColor: TeAppColorPalette.black,
                         monthColor: TeAppColorPalette.blackLight,
@@ -118,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         activeBackgroundDayColor: TeAppColorPalette.green,
                         dotsColor: TeAppColorPalette.black,
                         selectableDayPredicate: null,
-                        locale: 'es_ISO',
+                        locale: 'en_ISO',
                       ),
                     ),
                     Padding(
@@ -147,13 +156,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                             AlwaysStoppedAnimation<Color>(
                                                 TeAppColorPalette.green)));
                               }
+
                               final List<QueryDocumentSnapshot> documents =
                                   snapshot.data!.docs;
+
+                              final filteredDocuments =
+                                  documents.where((document) {
+                                DateTime classDate =
+                                    (document['classTimeStamp'] as Timestamp)
+                                        .toDate();
+                                return classDate.year == _selectedDate.year &&
+                                    classDate.month == _selectedDate.month &&
+                                    classDate.day == _selectedDate.day;
+                              }).toList();
+
                               return ListView.builder(
                                 scrollDirection: Axis.vertical,
-                                itemCount: documents.length,
+                                itemCount: filteredDocuments.length,
                                 itemBuilder: (context, index) {
-                                  final documentData = documents[index];
+                                  final documentData = filteredDocuments[index];
 
                                   // ignore: unused_local_variable
                                   String id = documents[index].id;

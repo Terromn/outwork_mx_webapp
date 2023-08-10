@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 
