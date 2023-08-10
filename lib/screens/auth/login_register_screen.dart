@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/screens/auth/auth.dart';
-import 'package:outwork_web_app/utils/get_media_query.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +16,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String? errorMessage = '';
   bool isLogin = true;
 
-    final _storage = FirebaseStorage.instance;
 
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
@@ -98,10 +95,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _storageRef = _storage.ref().child('/appAssets');
   }
 
-    late Reference _storageRef;
 
   @override
   Widget build(BuildContext context) {
