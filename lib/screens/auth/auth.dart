@@ -40,8 +40,8 @@ class Auth {
 
       await userRef.set({
         'name': name,
-        'reservedClases': [],
-        'creditsAvaliable': 0,
+        'reservedClasses': [],
+        'creditsAvailable': 0,
         'profilePicture': '${Random().nextInt(6)}.png',
       });
     } else {
