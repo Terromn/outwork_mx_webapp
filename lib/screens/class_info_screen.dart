@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
@@ -6,17 +7,87 @@ import 'package:outwork_web_app/models/class_info_model.dart';
 import 'package:intl/intl.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 
-class ClassInformationScreen extends StatelessWidget {
+import '../models/user_model.dart';
+import 'auth/auth.dart';
+
+// ignore: must_be_immutable
+class ClassInformationScreen extends StatefulWidget {
   final ClassInfoModel classInfo;
 
   const ClassInformationScreen({super.key, required this.classInfo});
+
+  @override
+  State<ClassInformationScreen> createState() => _ClassInformationScreenState();
+}
+
+class _ClassInformationScreenState extends State<ClassInformationScreen> {
+  late UserModel _userInfo;
+
+  final DocumentReference _userData = FirebaseFirestore.instance
+      .collection('users')
+      .doc(Auth().getCurrentUserUID());
+
+  @override
+  void initState() {
+    super.initState();
+
+    _userInfo = UserModel(
+      name: '',
+      creditsAvailable: 0,
+      profilePicture: '',
+      reservedClasses: [],
+    );
+
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      DocumentSnapshot userDataSnapshot = await _userData.get();
+        print("trying to get user data");
+
+      if (userDataSnapshot.exists) {
+        print("user data exists");
+        setState(() {
+          _userInfo = UserModel(
+            name: userDataSnapshot['name'],
+            creditsAvailable: userDataSnapshot['creditsAvailable'],
+            profilePicture: userDataSnapshot['profilePicture'],
+            reservedClasses:
+                List<String>.from(userDataSnapshot['reservedClasses']),
+          );
+        });
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+
+  bool canReserveClass() {
+    return _userInfo.creditsAvailable > 0;
+  }
+
+  void reserveClass() {
+    if (canReserveClass()) {
+      setState(() {
+        _userInfo.reservedClasses.add(widget.classInfo.documentID);
+        _userInfo.creditsAvailable--;
+      });
+      _userData.update({
+        'reservedClasses': _userInfo.reservedClasses,
+        'creditsAvailable': _userInfo.creditsAvailable,
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     double contentMargin = 32;
 
     return Scaffold(
-        appBar: AppBar(title: Text(classInfo.classType), toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)),
+        appBar: AppBar(
+            title: Text(widget.classInfo.classType),
+            toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)),
         body: Padding(
           padding: EdgeInsets.all(contentMargin),
           child: Column(
@@ -43,7 +114,7 @@ class ClassInformationScreen extends StatelessWidget {
                               height: 40,
                               child: Center(
                                 child: Text(
-                                  classInfo.classType,
+                                  widget.classInfo.classType,
                                   style: GoogleFonts.inter(
                                       color: TeAppColorPalette.black,
                                       fontWeight: FontWeight.bold,
@@ -63,13 +134,18 @@ class ClassInformationScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             DoubleText(
-                                type: "Dia/", title: DateFormat("d 'de' MMMM", 'es').format(classInfo.classDate)),
+                                type: "Dia/",
+                                title: DateFormat("d 'de' MMMM", 'es')
+                                    .format(widget.classInfo.classDate)),
                             DoubleText(
                                 type: "Duracion/",
-                                title: classInfo.classDuration != 1 ? "${classInfo.classDuration} Horas" : "${classInfo.classDuration} Hora"),
+                                title: widget.classInfo.classDuration != 1
+                                    ? "${widget.classInfo.classDuration} Horas"
+                                    : "${widget.classInfo.classDuration} Hora"),
                             DoubleText(
                                 type: "Capacidad/",
-                                title: "${classInfo.classLimitSpaces} Lugares"),
+                                title:
+                                    "${widget.classInfo.classLimitSpaces} Lugares"),
                           ],
                         ),
                       ),
@@ -91,7 +167,7 @@ class ClassInformationScreen extends StatelessWidget {
                           fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      classInfo.classDesription,
+                      widget.classInfo.classDesription,
                       style: GoogleFonts.inter(
                           fontSize: 16, fontWeight: FontWeight.bold),
                     )
@@ -102,7 +178,15 @@ class ClassInformationScreen extends StatelessWidget {
                 height: 60,
                 width: TeMediaQuery.getPercentageWidth(context, 100),
                 child: ElevatedButton(
-                  onPressed: null,
+                  onPressed: () async {
+                    await _fetchUserData();
+                    // ignore: unnecessary_null_comparison
+                    if (_userInfo != null) {
+                      reserveClass();
+                    } else {
+                      print("Error fetching user data or user data is null.");
+                    }
+                  },
                   child: Text(
                     "RESERVAR",
                     style: GoogleFonts.inter(

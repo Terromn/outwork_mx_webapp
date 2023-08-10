@@ -3,13 +3,14 @@ import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:outwork_web_app/models/user_model.dart';
 import 'package:outwork_web_app/screens/class_info_screen.dart';
 
 class TeClassCard extends StatelessWidget {
   final ClassInfoModel classInfo;
   final bool light;
 
-  const TeClassCard({super.key, required this.classInfo, required this.light});
+   const TeClassCard({super.key, required this.classInfo, required this.light});
 
   @override
   Widget build(BuildContext context) {

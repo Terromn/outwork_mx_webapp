@@ -41,7 +41,7 @@ class Auth {
       await userRef.set({
         'name': name,
         'reservedClases': [],
-        'creditsAvaliable' : 0,
+        'creditsAvaliable': 0,
         'profilePicture': '${Random().nextInt(6)}.png',
       });
     } else {
@@ -51,5 +51,9 @@ class Auth {
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+  }
+
+  String? getCurrentUserUID() {
+    return currentUser?.uid;
   }
 }

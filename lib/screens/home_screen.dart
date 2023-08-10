@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
+import 'package:outwork_web_app/screens/auth/auth.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 import 'package:outwork_web_app/widgets/te_class_card.dart';
 
@@ -17,8 +18,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  late String _username = '';
+
   final CollectionReference _referenceClasses =
       FirebaseFirestore.instance.collection('classes');
+
+       final DocumentReference _userData =
+      FirebaseFirestore.instance.collection('users').doc(Auth().getCurrentUserUID());
 
   @override
   void initState() {
@@ -27,6 +34,24 @@ class _HomeScreenState extends State<HomeScreen> {
     _selectedDate = DateTime.now().add(const Duration(days: 1));
 
     _streamClasses = _referenceClasses.snapshots();
+
+    _fetchUserData();
+  }
+
+    Future<void> _fetchUserData() async {
+    try {
+      DocumentSnapshot userDataSnapshot = await _userData.get();
+
+      if (userDataSnapshot.exists) {
+        setState(() {
+          _username = userDataSnapshot['name'];
+        });
+      }
+    } catch (error) {
+      // Handle error if fetching user data fails
+      // ignore: avoid_print
+      print('Error fetching user data: $error');
+    }
   }
 
   late Stream<QuerySnapshot> _streamClasses;
@@ -61,8 +86,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: GoogleFonts.inter(
                               fontWeight: FontWeight.w500, fontSize: 24),
                         ),
+                        
                         Text(
-                          'Username',
+                        _username,
                           style: GoogleFonts.inter(
                               fontWeight: FontWeight.bold, fontSize: 32),
                         )
@@ -195,6 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .toDate();
 
                                   ClassInfoModel classInfo = ClassInfoModel(
+                                    documentID: id,
                                     classCoach: classCoach,
                                     classDesription: classDesription,
                                     classDuration: classDuration,

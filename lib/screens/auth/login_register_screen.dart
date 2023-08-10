@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? errorMessage = '';
   bool isLogin = true;
 
-  final _storage = FirebaseStorage.instance;
+    final _storage = FirebaseStorage.instance;
 
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
@@ -76,10 +76,10 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed:
           isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
       child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Text(
             isLogin ? 'Login' : 'Register',
-            style: const TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16, color: TeAppColorPalette.black),
           )),
     );
   }
@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isLogin = !isLogin;
         });
       },
-      child: Text(isLogin ? 'Register Instead' : 'Login Instead'),
+      child: Text(isLogin ? 'Register Instead' : 'Login Instead', style: const TextStyle(color: TeAppColorPalette.white),),
     );
   }
 
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _storageRef = _storage.ref().child('/appAssets');
   }
 
-  late Reference _storageRef;
+    late Reference _storageRef;
 
   @override
   Widget build(BuildContext context) {
@@ -109,40 +109,25 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: TeAppColorPalette.black,
       body: Center(
         child: SingleChildScrollView(
-          child: FutureBuilder<String>(
-              future: _storageRef.child('appLogo.png').getDownloadURL(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Display a loading indicator while fetching the image URL
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  // Handle any errors that occurred while fetching the image URL
-                  return const Text('Error loading image');
-                } else {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: TeMediaQuery.getPercentageHeight(context, 30),
-                        width: TeMediaQuery.getPercentageHeight(context, 30),
-                        child: Image.network(
-                          snapshot.data!,
-                        ),
-                      ),
-                      !isLogin
-                          ? _entryField(' Name', _controllerName)
-                          : const SizedBox(),
-                      _entryField(' Email', _controllerEmail),
-                      _entryField(' Password', _controllerPassword),
-                      _errorMessage(),
-                      _submitButton(),
-                      _loginOrRegisterButton(),
-                    ],
-                  );
-                }
-              }),
-        ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                !isLogin ? _entryField(' Name', _controllerName) : const SizedBox(),
+                _entryField(' Email', _controllerEmail),
+                _entryField(' Password', _controllerPassword),
+                _errorMessage(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _submitButton(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _loginOrRegisterButton(),
+                ),
+              ],
+            ),
+          ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 class ClassInfoModel {
   // late final NetworkImage classCoachImage;
+  late final String documentID;
   late final String classCoach;
   late final String classDesription;
   late final int classDuration;
@@ -10,6 +11,7 @@ class ClassInfoModel {
 
   ClassInfoModel({
     // required this.classCoachImage,
+    required this.documentID,
     required this.classCoach,
     required this.classDesription,
     required this.classDuration,
