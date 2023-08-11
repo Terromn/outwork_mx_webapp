@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
 import 'package:outwork_web_app/screens/auth/auth.dart';
+import 'package:outwork_web_app/screens/available_classes_screen.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 import 'package:outwork_web_app/widgets/te_class_card.dart';
 
@@ -136,7 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontWeight: FontWeight.bold, fontSize: 24),
                           ),
                           ElevatedButton(
-                              onPressed: null,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AvailableClassesScreen()),
+                                );
+                              },
                               child: Text(
                                 'VER',
                                 style: GoogleFonts.inter(

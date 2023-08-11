@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
@@ -85,6 +86,13 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
     }
   }
 
+  Future<String> getCoachImageUrl() async {
+    final ref = FirebaseStorage.instance.ref(
+      'coaches/${widget.classInfo.classCoach}.png',
+    );
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
     double contentMargin = 32;
@@ -113,13 +121,32 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
                         child: Column(
                           children: [
                             Expanded(
-                              child: Image.network(""),
-                            ),
+                                child: Container(
+                              color: Colors.blue,
+                              child: FutureBuilder<String>(
+                                future: getCoachImageUrl(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+                                  final imageUrl = snapshot.data;
+
+                                  return Image.network(
+                                    imageUrl!,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                            )),
                             SizedBox(
                               height: 40,
                               child: Center(
                                 child: Text(
-                                  widget.classInfo.classType,
+                                  widget.classInfo.classCoach,
                                   style: GoogleFonts.inter(
                                       color: TeAppColorPalette.black,
                                       fontWeight: FontWeight.bold,
