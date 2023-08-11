@@ -8,8 +8,9 @@ import 'package:outwork_web_app/screens/class_info_screen.dart';
 class TeClassCard extends StatelessWidget {
   final ClassInfoModel classInfo;
   final bool light;
+  final bool reserving;
 
-   const TeClassCard({super.key, required this.classInfo, required this.light});
+   const TeClassCard({super.key, required this.classInfo, required this.light, required this.reserving});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +21,7 @@ class TeClassCard extends StatelessWidget {
           MaterialPageRoute(
               builder: (context) => ClassInformationScreen(
                     classInfo: classInfo,
+                    reserving: reserving,
                   )),
         );
       },

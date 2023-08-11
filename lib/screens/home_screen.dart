@@ -9,6 +9,7 @@ import 'package:outwork_web_app/utils/get_media_query.dart';
 import 'package:outwork_web_app/widgets/te_class_card.dart';
 
 import '../assets/app_color_palette.dart';
+import '../models/user_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,14 +19,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  late String _username = '';
+  late UserModel _userInfo;
 
   final CollectionReference _referenceClasses =
       FirebaseFirestore.instance.collection('classes');
 
-       final DocumentReference _userData =
-      FirebaseFirestore.instance.collection('users').doc(Auth().getCurrentUserUID());
+  final DocumentReference _userData = FirebaseFirestore.instance
+      .collection('users')
+      .doc(Auth().getCurrentUserUID());
 
   @override
   void initState() {
@@ -35,16 +36,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _streamClasses = _referenceClasses.snapshots();
 
+    _userInfo = UserModel(
+      name: '',
+      creditsAvailable: 0,
+      profilePicture: '',
+      reservedClasses: [],
+    );
+
     _fetchUserData();
   }
 
-    Future<void> _fetchUserData() async {
+  late Stream<QuerySnapshot> _streamClasses;
+
+  late DateTime _selectedDate;
+
+  Future<void> _fetchUserData() async {
     try {
       DocumentSnapshot userDataSnapshot = await _userData.get();
 
       if (userDataSnapshot.exists) {
         setState(() {
-          _username = userDataSnapshot['name'];
+          _userInfo = UserModel(
+            name: userDataSnapshot['name'],
+            creditsAvailable: userDataSnapshot['creditsAvailable'],
+            profilePicture: userDataSnapshot['profilePicture'],
+            reservedClasses:
+                List<String>.from(userDataSnapshot['reservedClasses']),
+          );
+
+          print(_userInfo.reservedClasses);
         });
       }
     } catch (error) {
@@ -53,10 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error fetching user data: $error');
     }
   }
-
-  late Stream<QuerySnapshot> _streamClasses;
-
-  late DateTime _selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: GoogleFonts.inter(
                               fontWeight: FontWeight.w500, fontSize: 24),
                         ),
-                        
                         Text(
-                        _username,
+                          _userInfo.name,
                           style: GoogleFonts.inter(
                               fontWeight: FontWeight.bold, fontSize: 32),
                         )
@@ -231,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
 
                                   return TeClassCard(
+                                    reserving: true,
                                     light: false,
                                     classInfo: classInfo,
                                   );
@@ -275,8 +291,75 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       Expanded(
-                        child: ListView(
-                          children: const [],
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: _streamClasses,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return const Center(
+                                child: Text(
+                                    'Lo sentimos! No podemos cargar la informacion en este momento'),
+                              );
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          TeAppColorPalette.green)));
+                            }
+
+                            final List<QueryDocumentSnapshot> documents =
+                                snapshot.data!.docs;
+
+                            final filteredDocuments =
+                                documents.where((document) {
+                              String documentID = document.id;
+                              return _userInfo.reservedClasses
+                                  .contains(documentID);
+                            }).toList();
+
+                            return ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: filteredDocuments.length,
+                              itemBuilder: (context, index) {
+                                final documentData = filteredDocuments[index];
+
+                                // ignore: unused_local_variable
+                                String id = documents[index].id;
+                                // ignore: avoid_init_to_null, unused_local_variable
+                                NetworkImage? classCoachImage = null;
+                                String classCoach = documentData['classCoach'];
+                                String classDesription =
+                                    documentData['classDescription'];
+                                int classDuration =
+                                    documentData['classDuration'];
+                                int classLimitSpaces =
+                                    documentData['classLimitSpaces'];
+                                String classType = documentData['classType'];
+                                DateTime classDate =
+                                    (documentData['classTimeStamp']
+                                            as Timestamp)
+                                        .toDate();
+
+                                ClassInfoModel classInfo = ClassInfoModel(
+                                  documentID: id,
+                                  classCoach: classCoach,
+                                  classDesription: classDesription,
+                                  classDuration: classDuration,
+                                  classDate: classDate,
+                                  classLimitSpaces: classLimitSpaces,
+                                  classType: classType,
+                                );
+
+                                return TeClassCard(
+                                  reserving: false,
+                                  light: true,
+                                  classInfo: classInfo,
+                                );
+                              },
+                            );
+                          },
                         ),
                       )
                     ],

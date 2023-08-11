@@ -13,8 +13,10 @@ import 'auth/auth.dart';
 // ignore: must_be_immutable
 class ClassInformationScreen extends StatefulWidget {
   final ClassInfoModel classInfo;
+  final bool reserving;
 
-  const ClassInformationScreen({super.key, required this.classInfo});
+  const ClassInformationScreen(
+      {super.key, required this.classInfo, required this.reserving});
 
   @override
   State<ClassInformationScreen> createState() => _ClassInformationScreenState();
@@ -44,9 +46,11 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
   Future<void> _fetchUserData() async {
     try {
       DocumentSnapshot userDataSnapshot = await _userData.get();
-        print("trying to get user data");
+      // ignore: avoid_print
+      print("trying to get user data");
 
       if (userDataSnapshot.exists) {
+        // ignore: avoid_print
         print("user data exists");
         setState(() {
           _userInfo = UserModel(
@@ -59,6 +63,7 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
         });
       }
     } catch (error) {
+      // ignore: avoid_print
       print('Error fetching user data: $error');
     }
   }
@@ -174,25 +179,31 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 60,
-                width: TeMediaQuery.getPercentageWidth(context, 100),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await _fetchUserData();
-                    // ignore: unnecessary_null_comparison
-                    if (_userInfo != null) {
-                      reserveClass();
-                    } else {
-                      print("Error fetching user data or user data is null.");
-                    }
-                  },
-                  child: Text(
-                    "RESERVAR",
-                    style: GoogleFonts.inter(
-                      color: TeAppColorPalette.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              Visibility(
+                visible: widget.reserving,
+                child: SizedBox(
+                  height: 60,
+                  width: TeMediaQuery.getPercentageWidth(context, 100),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await _fetchUserData();
+                      // ignore: unnecessary_null_comparison
+                      if (_userInfo != null) {
+                        reserveClass();
+                        // ignore: use_build_context_synchronously
+                        Navigator.pop(context, true); // Pop the current screen
+                      } else {
+                        // ignore: avoid_print
+                        print("Error fetching user data or user data is null.");
+                      }
+                    },
+                    child: Text(
+                      "RESERVAR",
+                      style: GoogleFonts.inter(
+                        color: TeAppColorPalette.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
