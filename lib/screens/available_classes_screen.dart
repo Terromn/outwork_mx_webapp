@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
@@ -7,7 +8,6 @@ import '../assets/app_color_palette.dart';
 import '../widgets/te_class_card.dart';
 
 class AvailableClassesScreen extends StatefulWidget {
-
   const AvailableClassesScreen({super.key});
 
   @override
@@ -15,8 +15,7 @@ class AvailableClassesScreen extends StatefulWidget {
 }
 
 class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
-
-    final CollectionReference _referenceClasses =
+  final CollectionReference _referenceClasses =
       FirebaseFirestore.instance.collection('classes');
 
   @override
@@ -27,6 +26,30 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
 
   late Stream<QuerySnapshot> _streamClasses;
 
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  DateTime _selectedDate = DateTime.now();
+  String _selectedCoach = '';
+  String _selectedClassType = '';
+  int _selectedDuration = 1;
+
+  Widget datePickerChip(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+          lastDate: (DateTime.now().subtract(const Duration(days: 730))),
+        );
+      },
+      child: const Expanded(
+          child: Center(
+        child: Row(
+          children: [Icon(Icons.date_range), Text('Fecha')],
+        ),
+      )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +57,14 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
       appBar: AppBar(centerTitle: true, title: const Text("Clases")),
       body: Column(
         children: [
-          SizedBox(height: TeMediaQuery.getPercentageHeight(context, 20) - AppBar().preferredSize.height),
           SizedBox(
-            height: TeMediaQuery.getPercentageHeight(context, 80 - AppBar().preferredSize.height),
+            height: TeMediaQuery.getPercentageHeight(context, 8),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: const [],
+            ),
+          ),
+          Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _streamClasses,
               builder: (context, snapshot) {
