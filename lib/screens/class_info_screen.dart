@@ -100,7 +100,8 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
     return Scaffold(
         appBar: AppBar(
             title: Text(widget.classInfo.classType),
-            toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)),
+            // toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)
+            ),
         body: Padding(
           padding: EdgeInsets.all(contentMargin),
           child: Column(

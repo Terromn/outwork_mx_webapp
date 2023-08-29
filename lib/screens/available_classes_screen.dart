@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 
@@ -33,21 +34,157 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   int _selectedDuration = 1;
 
   Widget datePickerChip(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: (DateTime.now().subtract(const Duration(days: 730))),
-          lastDate: (DateTime.now().subtract(const Duration(days: 730))),
-        );
-      },
-      child: const Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      child: ElevatedButton(
+        onPressed: () {
+          showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+            lastDate: (DateTime.now().add(const Duration(days: 730))),
+          );
+        },
+        child: const SizedBox(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18),
           child: Center(
-        child: Row(
-          children: [Icon(Icons.date_range), Text('Fecha')],
-        ),
-      )),
+            child: Row(
+              children: [
+                Icon(Icons.date_range_rounded, color: TeAppColorPalette.black),
+                Text(
+                  ' Fecha',
+                  style: TextStyle(color: TeAppColorPalette.black),
+                )
+              ],
+            ),
+          ),
+        )),
+      ),
+    );
+  }
+
+  Widget hourPickerChip(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      child: ElevatedButton(
+        onPressed: () {
+          showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+            lastDate: (DateTime.now().add(const Duration(days: 730))),
+          );
+        },
+        child: const SizedBox(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          child: Center(
+            child: Row(
+              children: [
+                Icon(Icons.watch, color: TeAppColorPalette.black),
+                Text(
+                  ' Hora',
+                  style: TextStyle(color: TeAppColorPalette.black),
+                )
+              ],
+            ),
+          ),
+        )),
+      ),
+    );
+  }
+
+  Widget typePickerChip(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      child: ElevatedButton(
+        onPressed: () {
+          showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+            lastDate: (DateTime.now().add(const Duration(days: 730))),
+          );
+        },
+        child: const SizedBox(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          child: Center(
+            child: Row(
+              children: [
+                Icon(Icons.swap_calls_sharp, color: TeAppColorPalette.black),
+                Text(
+                  ' Tipo',
+                  style: TextStyle(color: TeAppColorPalette.black),
+                )
+              ],
+            ),
+          ),
+        )),
+      ),
+    );
+  }
+
+  Widget coachPickerChip(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      child: ElevatedButton(
+        onPressed: () {
+          showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+            lastDate: (DateTime.now().add(const Duration(days: 730))),
+          );
+        },
+        child: const SizedBox(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          child: Center(
+            child: Row(
+              children: [
+                Icon(Icons.person_2_rounded, color: TeAppColorPalette.black),
+                Text(
+                  ' Coach',
+                  style: TextStyle(color: TeAppColorPalette.black),
+                )
+              ],
+            ),
+          ),
+        )),
+      ),
+    );
+  }
+
+  Widget durationPickerChip(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+      child: ElevatedButton(
+        onPressed: () {
+          showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+            lastDate: (DateTime.now().add(const Duration(days: 730))),
+          );
+        },
+        child: const SizedBox(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18),
+          child: Center(
+            child: Row(
+              children: [
+                Icon(Icons.timer, color: TeAppColorPalette.black),
+                Text(
+                  ' Duracion',
+                  style: TextStyle(color: TeAppColorPalette.black),
+                )
+              ],
+            ),
+          ),
+        )),
+      ),
     );
   }
 
@@ -59,9 +196,17 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
         children: [
           SizedBox(
             height: TeMediaQuery.getPercentageHeight(context, 8),
-            child: ListView(
+            child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              children: const [],
+              child: Row(
+                children: [
+                  datePickerChip(context),
+                  hourPickerChip(context),
+                  durationPickerChip(context),
+                  coachPickerChip(context),
+                  typePickerChip(context),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -113,10 +258,14 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                       classType: classType,
                     );
 
-                    return TeClassCard(
-                      reserving: true,
-                      light: false,
-                      classInfo: classInfo,
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: TeAppThemeData.contentMargin),
+                      child: TeClassCard(
+                        reserving: true,
+                        light: false,
+                        classInfo: classInfo,
+                      ),
                     );
                   },
                 );
