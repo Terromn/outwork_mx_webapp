@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
@@ -69,12 +68,7 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
         onPressed: () {
-          showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
-            lastDate: (DateTime.now().add(const Duration(days: 730))),
-          );
+          showTimePicker(context: context, initialTime: TimeOfDay.now());
         },
         child: const SizedBox(
             child: Padding(
@@ -99,14 +93,7 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
-        onPressed: () {
-          showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
-            lastDate: (DateTime.now().add(const Duration(days: 730))),
-          );
-        },
+        onPressed: () {},
         child: const SizedBox(
             child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 18),
@@ -162,11 +149,32 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
         onPressed: () {
-          showDatePicker(
+          showDialog(
             context: context,
-            initialDate: DateTime.now(),
-            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
-            lastDate: (DateTime.now().add(const Duration(days: 730))),
+            builder: (BuildContext context) {
+              return Center(
+                child: Container(
+                  width: TeMediaQuery.getPercentageWidth(context, 40),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(maxWidth: 300),
+                  child: ListView.builder(
+                    itemCount: 23,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text('${index + 1} hrs'),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
         child: const SizedBox(
@@ -192,85 +200,91 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text("Clases")),
-      body: Column(
+      body: Stack(
         children: [
-          SizedBox(
-            height: TeMediaQuery.getPercentageHeight(context, 8),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  datePickerChip(context),
-                  hourPickerChip(context),
-                  durationPickerChip(context),
-                  coachPickerChip(context),
-                  typePickerChip(context),
-                ],
+          Column(
+            children: [
+              SizedBox(
+                height: TeMediaQuery.getPercentageHeight(context, 8),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      datePickerChip(context),
+                      hourPickerChip(context),
+                      durationPickerChip(context),
+                      coachPickerChip(context),
+                      typePickerChip(context),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _streamClasses,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                        'Lo sentimos! No podemos cargar la informacion en este momento'),
-                  );
-                }
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _streamClasses,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text(
+                            'Lo sentimos! No podemos cargar la informacion en este momento'),
+                      );
+                    }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              TeAppColorPalette.green)));
-                }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  TeAppColorPalette.green)));
+                    }
 
-                final List<QueryDocumentSnapshot> documents =
-                    snapshot.data!.docs;
+                    final List<QueryDocumentSnapshot> documents =
+                        snapshot.data!.docs;
 
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: documents.length,
-                  itemBuilder: (context, index) {
-                    final documentData = documents[index];
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: documents.length,
+                      itemBuilder: (context, index) {
+                        final documentData = documents[index];
 
-                    // ignore: unused_local_variable
-                    String id = documents[index].id;
-                    // ignore: avoid_init_to_null, unused_local_variable
-                    NetworkImage? classCoachImage = null;
-                    String classCoach = documentData['classCoach'];
-                    String classDesription = documentData['classDescription'];
-                    int classDuration = documentData['classDuration'];
-                    int classLimitSpaces = documentData['classLimitSpaces'];
-                    String classType = documentData['classType'];
-                    DateTime classDate =
-                        (documentData['classTimeStamp'] as Timestamp).toDate();
+                        // ignore: unused_local_variable
+                        String id = documents[index].id;
+                        // ignore: avoid_init_to_null, unused_local_variable
+                        NetworkImage? classCoachImage = null;
+                        String classCoach = documentData['classCoach'];
+                        String classDesription =
+                            documentData['classDescription'];
+                        int classDuration = documentData['classDuration'];
+                        int classLimitSpaces = documentData['classLimitSpaces'];
+                        String classType = documentData['classType'];
+                        DateTime classDate =
+                            (documentData['classTimeStamp'] as Timestamp)
+                                .toDate();
 
-                    ClassInfoModel classInfo = ClassInfoModel(
-                      documentID: id,
-                      classCoach: classCoach,
-                      classDesription: classDesription,
-                      classDuration: classDuration,
-                      classDate: classDate,
-                      classLimitSpaces: classLimitSpaces,
-                      classType: classType,
-                    );
+                        ClassInfoModel classInfo = ClassInfoModel(
+                          documentID: id,
+                          classCoach: classCoach,
+                          classDesription: classDesription,
+                          classDuration: classDuration,
+                          classDate: classDate,
+                          classLimitSpaces: classLimitSpaces,
+                          classType: classType,
+                        );
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: TeAppThemeData.contentMargin),
-                      child: TeClassCard(
-                        reserving: true,
-                        light: false,
-                        classInfo: classInfo,
-                      ),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: TeAppThemeData.contentMargin),
+                          child: TeClassCard(
+                            reserving: true,
+                            light: false,
+                            classInfo: classInfo,
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
