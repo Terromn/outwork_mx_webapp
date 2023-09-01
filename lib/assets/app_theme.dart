@@ -92,6 +92,25 @@ class TeAppThemeData {
       ),
     ),
 
+    // TIME PICKER //
+    timePickerTheme: const TimePickerThemeData(
+      backgroundColor: TeAppColorPalette.black,
+      dialHandColor: TeAppColorPalette.green,
+      dayPeriodColor: TeAppColorPalette.green,
+      dialBackgroundColor: TeAppColorPalette.blackLight,
+      hourMinuteColor: TeAppColorPalette.blackLight,
+      dayPeriodTextColor: TeAppColorPalette.black,
+      hourMinuteTextColor: TeAppColorPalette.green,
+      // You can customize other properties as well
+    ),
+
+    datePickerTheme: const DatePickerThemeData(
+      backgroundColor: TeAppColorPalette.black,
+      headerBackgroundColor: TeAppColorPalette.blackLight,
+      todayBorder: BorderSide(color: TeAppColorPalette.green),
+      dividerColor: TeAppColorPalette.green
+    ),
+
     splashColor: TeAppColorPalette.green,
     scaffoldBackgroundColor: TeAppColorPalette.blackLight,
 

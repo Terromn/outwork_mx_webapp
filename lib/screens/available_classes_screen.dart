@@ -93,7 +93,34 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Center(
+                child: Container(
+                  height: 360,
+                    width: TeMediaQuery.getPercentageWidth(context, 40),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: TeAppColorPalette.black,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: Center(
+                      child: ListView(
+                      
+                        children: [
+                          pickerButton(context, "Yoga"),
+                          pickerButton(context, "Calistenia"),
+                          pickerButton(context, "HIIT")
+                        ],
+                      ),
+                    )),
+              );
+            },
+          );
+        },
         child: const SizedBox(
             child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 18),
@@ -113,16 +140,70 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     );
   }
 
+  Widget pickerButton(BuildContext context, String insideText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: ElevatedButton(
+        child: SizedBox(
+          height: 48,
+          child: Center(
+            child: Text(
+              insideText,
+              style:
+                  const TextStyle(color: TeAppColorPalette.black, fontSize: 18),
+            ),
+          ),
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+    ;
+  }
+
   Widget coachPickerChip(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
         onPressed: () {
-          showDatePicker(
+          showDialog(
             context: context,
-            initialDate: DateTime.now(),
-            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
-            lastDate: (DateTime.now().add(const Duration(days: 730))),
+            builder: (BuildContext context) {
+              return Center(
+                child: Container(
+                  height: 360,
+                    width: TeMediaQuery.getPercentageWidth(context, 40),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: TeAppColorPalette.black,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: FutureBuilder<QuerySnapshot>(
+                  future: FirebaseFirestore.instance.collection('coaches').get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return const Text('Error loading coaches');
+                    }
+                    final coaches = snapshot.data!.docs;
+
+                    return Center(
+                      child: ListView.builder(
+                        itemCount: coaches.length,
+                        itemBuilder: (context, index) {
+                          final coachName = coaches[index]['coachName'];
+                          return pickerButton(context, coachName);
+                        },
+                      ),
+                    );
+                  },
+                ),),
+              );
+            },
           );
         },
         child: const SizedBox(
@@ -154,21 +235,22 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
             builder: (BuildContext context) {
               return Center(
                 child: Container(
+                  height: 600,
                   width: TeMediaQuery.getPercentageWidth(context, 40),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: TeAppColorPalette.black,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   constraints: const BoxConstraints(maxWidth: 300),
                   child: ListView.builder(
-                    itemCount: 23,
+                    itemCount: 24,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('${index + 1} hrs'),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 16),
+                        child: 
+                        pickerButton(context, "${index + 1} hrs")
                       );
                     },
                   ),

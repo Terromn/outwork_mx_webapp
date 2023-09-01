@@ -287,15 +287,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: GoogleFonts.inter(
                                 fontWeight: FontWeight.bold, fontSize: 24),
                           ),
-                          ElevatedButton(
-                              onPressed: null,
-                              child: Text(
-                                'VER',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ))
+                          // ElevatedButton(
+                          //     onPressed: null,
+                          //     child: Text(
+                          //       'VER',
+                          //       style: GoogleFonts.inter(
+                          //           fontSize: 12,
+                          //           color: Colors.black,
+                          //           fontWeight: FontWeight.bold),
+                          //     ))
                         ],
                       ),
                       Expanded(
