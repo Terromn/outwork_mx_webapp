@@ -26,23 +26,70 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
 
   late Stream<QuerySnapshot> _streamClasses;
 
-  TimeOfDay _selectedTime = TimeOfDay.now();
-  DateTime _selectedDate = DateTime.now();
-  String _selectedCoach = '';
-  String _selectedClassType = '';
-  int _selectedDuration = 1;
+  TimeOfDay? _selectedTime;
+  DateTime? _selectedDate;
+  String? _selectedCoach;
+  String? _selectedClassType;
+  int? _selectedDuration;
+
+  void _updateSelectedCoach(String newCoach) {
+    setState(() {
+      _selectedCoach = newCoach;
+    });
+  }
+
+  void _updateSelectedClassType(String newClassType) {
+    setState(() {
+      _selectedClassType = newClassType;
+    });
+  }
+
+  void _updateSelectedDuration(int newDuration) {
+    setState(() {
+      _selectedDuration = newDuration;
+    });
+  }
+
+  Widget pickerButton(BuildContext context, String insideText,
+      Function updateFilter, var filterValue) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: ElevatedButton(
+        child: SizedBox(
+          height: 68,
+          child: Center(
+            child: Text(
+              insideText,
+              style:
+                  const TextStyle(color: TeAppColorPalette.black, fontSize: 18),
+            ),
+          ),
+        ),
+        onPressed: () {
+          updateFilter(filterValue);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
 
   Widget datePickerChip(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
-        onPressed: () {
-          showDatePicker(
+        onPressed: () async {
+          final pickedDate = await showDatePicker(
             context: context,
-            initialDate: DateTime.now(),
+            initialDate: _selectedDate ?? DateTime.now(),
             firstDate: (DateTime.now().subtract(const Duration(days: 730))),
             lastDate: (DateTime.now().add(const Duration(days: 730))),
           );
+
+          if (pickedDate != null) {
+            setState(() {
+              _selectedDate = pickedDate;
+            });
+          }
         },
         child: const SizedBox(
             child: Padding(
@@ -67,8 +114,15 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
       child: ElevatedButton(
-        onPressed: () {
-          showTimePicker(context: context, initialTime: TimeOfDay.now());
+        onPressed: () async {
+          final pickedTime = await showTimePicker(
+              context: context, initialTime: _selectedTime ?? TimeOfDay.now());
+
+          if (pickedTime != null) {
+            setState(() {
+              _selectedTime = pickedTime;
+            });
+          }
         },
         child: const SizedBox(
             child: Padding(
@@ -99,7 +153,7 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
             builder: (BuildContext context) {
               return Center(
                 child: Container(
-                  height: 360,
+                    height: 360,
                     width: TeMediaQuery.getPercentageWidth(context, 40),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -109,11 +163,13 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                     constraints: const BoxConstraints(maxWidth: 300),
                     child: Center(
                       child: ListView(
-                      
                         children: [
-                          pickerButton(context, "Yoga"),
-                          pickerButton(context, "Calistenia"),
-                          pickerButton(context, "HIIT")
+                          pickerButton(context, "Yoga",
+                              _updateSelectedClassType, "Yoga"),
+                          pickerButton(context, "Calistenia",
+                              _updateSelectedClassType, "Calistenia"),
+                          pickerButton(context, "HIIT",
+                              _updateSelectedClassType, "HIIT"),
                         ],
                       ),
                     )),
@@ -140,28 +196,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     );
   }
 
-  Widget pickerButton(BuildContext context, String insideText) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      child: ElevatedButton(
-        child: SizedBox(
-          height: 48,
-          child: Center(
-            child: Text(
-              insideText,
-              style:
-                  const TextStyle(color: TeAppColorPalette.black, fontSize: 18),
-            ),
-          ),
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-    );
-    ;
-  }
-
   Widget coachPickerChip(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
@@ -173,35 +207,38 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
               return Center(
                 child: Container(
                   height: 360,
-                    width: TeMediaQuery.getPercentageWidth(context, 40),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: TeAppColorPalette.black,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(maxWidth: 300),
-                    child: FutureBuilder<QuerySnapshot>(
-                  future: FirebaseFirestore.instance.collection('coaches').get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return const Text('Error loading coaches');
-                    }
-                    final coaches = snapshot.data!.docs;
+                  width: TeMediaQuery.getPercentageWidth(context, 40),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: TeAppColorPalette.black,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: const BoxConstraints(maxWidth: 300),
+                  child: FutureBuilder<QuerySnapshot>(
+                    future:
+                        FirebaseFirestore.instance.collection('coaches').get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (snapshot.hasError) {
+                        return const Text('Error loading coaches');
+                      }
+                      final coaches = snapshot.data!.docs;
 
-                    return Center(
-                      child: ListView.builder(
-                        itemCount: coaches.length,
-                        itemBuilder: (context, index) {
-                          final coachName = coaches[index]['coachName'];
-                          return pickerButton(context, coachName);
-                        },
-                      ),
-                    );
-                  },
-                ),),
+                      return Center(
+                        child: ListView.builder(
+                          itemCount: coaches.length,
+                          itemBuilder: (context, index) {
+                            final coachName = coaches[index]['coachName'];
+                            return pickerButton(context, coachName,
+                                _updateSelectedCoach, coachName);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
               );
             },
           );
@@ -247,11 +284,10 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                     itemCount: 24,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 16),
-                        child: 
-                        pickerButton(context, "${index + 1} hrs")
-                      );
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 16),
+                          child: pickerButton(context, "${index + 1} hrs",
+                              _updateSelectedDuration, index));
                     },
                   ),
                 ),
@@ -322,16 +358,54 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                     final List<QueryDocumentSnapshot> documents =
                         snapshot.data!.docs;
 
+                    final filteredDocuments = documents.where((document) {
+                      final classDate =
+                          (document['classTimeStamp'] as Timestamp).toDate();
+                      final classCoach = document['classCoach'];
+                      final classType = document['classType'];
+                      final classDuration = document['classDuration'];
+
+                      if (_selectedTime != null) {
+                        final classTime = TimeOfDay.fromDateTime(classDate);
+                        if (_selectedTime != classTime) {
+                          return false;
+                        }
+                      }
+
+                      if (_selectedDate != null) {
+                        if (_selectedDate != classDate) {
+                          return false;
+                        }
+                      }
+
+                      if (_selectedCoach != null && classCoach != null) {
+                        if (_selectedCoach != classCoach) {
+                          return false;
+                        }
+                      }
+
+                      if (_selectedClassType != null && classType != null) {
+                        if (_selectedClassType != classType) {
+                          return false;
+                        }
+                      }
+
+                      if (_selectedDuration != null && classDuration != null) {
+                        if (_selectedDuration != classDuration) {
+                          return false;
+                        }
+                      }
+
+                      return true; // Include this document in the filtered list.
+                    }).toList();
+
                     return ListView.builder(
                       scrollDirection: Axis.vertical,
-                      itemCount: documents.length,
+                      itemCount: filteredDocuments.length,
                       itemBuilder: (context, index) {
-                        final documentData = documents[index];
+                        final documentData = filteredDocuments[index];
 
-                        // ignore: unused_local_variable
-                        String id = documents[index].id;
-                        // ignore: avoid_init_to_null, unused_local_variable
-                        NetworkImage? classCoachImage = null;
+                        String id = filteredDocuments[index].id;
                         String classCoach = documentData['classCoach'];
                         String classDesription =
                             documentData['classDescription'];

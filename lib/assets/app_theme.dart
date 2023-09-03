@@ -109,6 +109,7 @@ class TeAppThemeData {
       headerBackgroundColor: TeAppColorPalette.blackLight,
       todayBorder: BorderSide(color: TeAppColorPalette.green),
       dividerColor: TeAppColorPalette.green
+       
     ),
 
     splashColor: TeAppColorPalette.green,

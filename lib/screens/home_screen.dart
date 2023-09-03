@@ -1,6 +1,7 @@
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
@@ -45,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     _fetchUserData();
+
+    FlutterNativeSplash.remove();
   }
 
   late Stream<QuerySnapshot> _streamClasses;

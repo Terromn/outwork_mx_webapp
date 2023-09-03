@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/screens/auth/auth.dart';
 
@@ -13,6 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  
   String? errorMessage = '';
   bool isLogin = true;
 
@@ -95,6 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+        FlutterNativeSplash.remove();
   }
 
 
