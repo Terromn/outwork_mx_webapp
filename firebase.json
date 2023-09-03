@@ -7,6 +7,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "site": "app-outwork",
     "public": "build/web",
     "ignore": [
       "firebase.json",

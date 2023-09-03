@@ -113,52 +113,50 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                        child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: TeAppColorPalette.green,
-                        ),
-                        child: Column(
-                          children: [
-                            Expanded(
-                                child: Container(
-                              color: Colors.blue,
-                              child: FutureBuilder<String>(
-                                future: getCoachImageUrl(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
-                                  }
-                                  if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  }
-                                  final imageUrl = snapshot.data;
-
-                                  return Image.network(
-                                    imageUrl!,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
-                            )),
-                            SizedBox(
+                      child: Column(
+                        children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              child: Expanded(
+                                  child: FutureBuilder<String>(
+                                    future: getCoachImageUrl(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const CircularProgressIndicator();
+                                      }
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      }
+                                      final imageUrl = snapshot.data;
+                                                      
+                                      return Image.network(
+                                        imageUrl!,
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
+                                  )),
+                            ),
+                          Container(
+                              decoration: const BoxDecoration(
+                        color: TeAppColorPalette.blackLight,
+                      ),
+                            child: SizedBox(
                               height: 40,
                               child: Center(
                                 child: Text(
                                   widget.classInfo.classCoach,
                                   style: GoogleFonts.inter(
-                                      color: TeAppColorPalette.black,
+                                      color: TeAppColorPalette.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16),
                                 ),
                               ),
-                            )
-                          ],
-                        ),
+                            ),
+                          )
+                        ],
                       ),
-                    )),
+                    ),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16.0),

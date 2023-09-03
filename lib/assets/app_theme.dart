@@ -9,6 +9,10 @@ class TeAppThemeData {
   static const double contentMargin = 32;
 
   static final ThemeData darkTheme = ThemeData(
+    primaryColorDark: TeAppColorPalette.green,
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: TeAppColorPalette.green,
+    ),
     // APPBAR //
     appBarTheme: AppBarTheme(
       backgroundColor: TeAppColorPalette.green,
@@ -104,12 +108,42 @@ class TeAppThemeData {
       // You can customize other properties as well
     ),
 
-    datePickerTheme: const DatePickerThemeData(
+    datePickerTheme: DatePickerThemeData(
       backgroundColor: TeAppColorPalette.black,
       headerBackgroundColor: TeAppColorPalette.blackLight,
-      todayBorder: BorderSide(color: TeAppColorPalette.green),
-      dividerColor: TeAppColorPalette.green
-       
+      todayBorder: const BorderSide(color: TeAppColorPalette.green),
+      dividerColor: TeAppColorPalette.green,
+      todayBackgroundColor: MaterialStateProperty.all<Color>(
+        TeAppColorPalette.black,
+      ),
+      dayOverlayColor: MaterialStateProperty.all<Color>(
+        TeAppColorPalette.green,
+      ),
+      todayForegroundColor: MaterialStateProperty.all<Color>(
+        TeAppColorPalette.green,
+      ),
+      rangeSelectionOverlayColor: MaterialStateProperty.all<Color>(
+        TeAppColorPalette.green,
+      ),
+      rangePickerBackgroundColor: TeAppColorPalette.green,
+      dayBackgroundColor:
+          MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return TeAppColorPalette.green;
+        } else {
+          return TeAppColorPalette.black;
+        }
+      }),
+      dayForegroundColor:  MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return TeAppColorPalette.black;
+        } else {
+          return TeAppColorPalette.white;
+        }
+      }),
+ 
+      rangePickerHeaderForegroundColor: TeAppColorPalette.white,
+
     ),
 
     splashColor: TeAppColorPalette.green,
