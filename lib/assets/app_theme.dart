@@ -100,7 +100,8 @@ class TeAppThemeData {
     timePickerTheme: const TimePickerThemeData(
       backgroundColor: TeAppColorPalette.black,
       dialHandColor: TeAppColorPalette.green,
-      dayPeriodColor: TeAppColorPalette.green,
+      // dayPeriodColor: TeAppColorPalette.green,
+
       dialBackgroundColor: TeAppColorPalette.blackLight,
       hourMinuteColor: TeAppColorPalette.blackLight,
       dayPeriodTextColor: TeAppColorPalette.black,
@@ -111,6 +112,7 @@ class TeAppThemeData {
     datePickerTheme: DatePickerThemeData(
       backgroundColor: TeAppColorPalette.black,
       headerBackgroundColor: TeAppColorPalette.blackLight,
+      headerForegroundColor: TeAppColorPalette.white,
       todayBorder: const BorderSide(color: TeAppColorPalette.green),
       dividerColor: TeAppColorPalette.green,
       todayBackgroundColor: MaterialStateProperty.all<Color>(
@@ -141,7 +143,10 @@ class TeAppThemeData {
           return TeAppColorPalette.white;
         }
       }),
- 
+
+      
+
+      surfaceTintColor: TeAppColorPalette.green,
       rangePickerHeaderForegroundColor: TeAppColorPalette.white,
 
     ),

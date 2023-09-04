@@ -99,9 +99,10 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
 
     return Scaffold(
         appBar: AppBar(
-            title: Text(widget.classInfo.classType),
-            // toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)    
-            ),
+          title: Text(widget.classInfo.classType, style: GoogleFonts.inter(
+                          fontSize: 22, fontWeight: FontWeight.bold),),
+          // toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)
+        ),
         body: Padding(
           padding: EdgeInsets.all(contentMargin),
           child: Column(
@@ -115,32 +116,33 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
                     Expanded(
                       child: Column(
                         children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
-                              child: Expanded(
-                                  child: FutureBuilder<String>(
-                                    future: getCoachImageUrl(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const CircularProgressIndicator();
-                                      }
-                                      if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      }
-                                      final imageUrl = snapshot.data;
-                                                      
-                                      return Image.network(
-                                        imageUrl!,
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
-                                  )),
+                          Expanded(
+                            child: FutureBuilder<String>(
+                              future: getCoachImageUrl(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final imageUrl = snapshot.data;
+
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Image.network(
+                                    imageUrl!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              },
                             ),
+                          ),
                           Container(
-                              decoration: const BoxDecoration(
-                        color: TeAppColorPalette.blackLight,
-                      ),
+                            decoration: const BoxDecoration(
+                              color: TeAppColorPalette.blackLight,
+                            ),
                             child: SizedBox(
                               height: 40,
                               child: Center(

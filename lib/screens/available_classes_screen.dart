@@ -30,7 +30,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   DateTime? _selectedDate;
   String? _selectedCoach;
   String? _selectedClassType;
-  int? _selectedDuration;
 
   void _updateSelectedCoach(String newCoach) {
     setState(() {
@@ -41,12 +40,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   void _updateSelectedClassType(String newClassType) {
     setState(() {
       _selectedClassType = newClassType;
-    });
-  }
-
-  void _updateSelectedDuration(int newDuration) {
-    setState(() {
-      _selectedDuration = newDuration;
     });
   }
 
@@ -76,36 +69,49 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   Widget datePickerChip(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-      child: ElevatedButton(
-        onPressed: () async {
-          final pickedDate = await showDatePicker(
-            context: context,
-            initialDate: _selectedDate ?? DateTime.now(),
-            firstDate: (DateTime.now().subtract(const Duration(days: 730))),
-            lastDate: (DateTime.now().add(const Duration(days: 730))),
-          );
-
-          if (pickedDate != null) {
-            setState(() {
-              _selectedDate = pickedDate;
-            });
-          }
-        },
-        child: const SizedBox(
-            child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18),
-          child: Center(
-            child: Row(
-              children: [
-                Icon(Icons.date_range_rounded, color: TeAppColorPalette.black),
-                Text(
-                  ' Fecha',
-                  style: TextStyle(color: TeAppColorPalette.black),
-                )
-              ],
+      child: TextButtonTheme(
+        data: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        )),
+        ),
+        child: Builder(builder: (BuildContext context) {
+          return ElevatedButton(
+            onPressed: () async {
+              final pickedDate = await showDatePicker(
+                context: context,
+                initialDate: _selectedDate ?? DateTime.now(),
+                firstDate: (DateTime.now().subtract(const Duration(days: 730))),
+                lastDate: (DateTime.now().add(const Duration(days: 730))),
+              );
+
+              if (pickedDate != null) {
+                setState(() {
+                  _selectedDate = pickedDate;
+                });
+              }
+            },
+            child: const SizedBox(
+                child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: Center(
+                child: Row(
+                  children: [
+                    Icon(Icons.date_range_rounded,
+                        color: TeAppColorPalette.black),
+                    Text(
+                      ' Fecha',
+                      style: TextStyle(color: TeAppColorPalette.black),
+                    )
+                  ],
+                ),
+              ),
+            )),
+          );
+        }),
       ),
     );
   }
@@ -113,32 +119,45 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   Widget hourPickerChip(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-      child: ElevatedButton(
-        onPressed: () async {
-          final pickedTime = await showTimePicker(
-              context: context, initialTime: _selectedTime ?? TimeOfDay.now());
-
-          if (pickedTime != null) {
-            setState(() {
-              _selectedTime = pickedTime;
-            });
-          }
-        },
-        child: const SizedBox(
-            child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18),
-          child: Center(
-            child: Row(
-              children: [
-                Icon(Icons.watch, color: TeAppColorPalette.black),
-                Text(
-                  ' Hora',
-                  style: TextStyle(color: TeAppColorPalette.black),
-                )
-              ],
+      child: TextButtonTheme(
+        data: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        )),
+        ),
+        child: Builder(builder: (BuildContext context) {
+          return ElevatedButton(
+            onPressed: () async {
+              final pickedTime = await showTimePicker(
+                  context: context,
+                  initialTime: _selectedTime ?? TimeOfDay.now());
+
+              if (pickedTime != null) {
+                setState(() {
+                  _selectedTime = pickedTime;
+                });
+              }
+            },
+            child: const SizedBox(
+                child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: Center(
+                child: Row(
+                  children: [
+                    Icon(Icons.watch, color: TeAppColorPalette.black),
+                    Text(
+                      ' Hora',
+                      style: TextStyle(color: TeAppColorPalette.black),
+                    )
+                  ],
+                ),
+              ),
+            )),
+          );
+        }),
       ),
     );
   }
@@ -262,58 +281,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     );
   }
 
-  Widget durationPickerChip(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-      child: ElevatedButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Center(
-                child: Container(
-                  height: 600,
-                  width: TeMediaQuery.getPercentageWidth(context, 40),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: TeAppColorPalette.black,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  constraints: const BoxConstraints(maxWidth: 300),
-                  child: ListView.builder(
-                    itemCount: 24,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 16),
-                          child: pickerButton(context, "${index + 1} hrs",
-                              _updateSelectedDuration, index));
-                    },
-                  ),
-                ),
-              );
-            },
-          );
-        },
-        child: const SizedBox(
-            child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18),
-          child: Center(
-            child: Row(
-              children: [
-                Icon(Icons.timer, color: TeAppColorPalette.black),
-                Text(
-                  ' Duracion',
-                  style: TextStyle(color: TeAppColorPalette.black),
-                )
-              ],
-            ),
-          ),
-        )),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -330,7 +297,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                     children: [
                       datePickerChip(context),
                       hourPickerChip(context),
-                      durationPickerChip(context),
                       coachPickerChip(context),
                       typePickerChip(context),
                     ],
@@ -363,7 +329,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                           (document['classTimeStamp'] as Timestamp).toDate();
                       final classCoach = document['classCoach'];
                       final classType = document['classType'];
-                      final classDuration = document['classDuration'];
 
                       if (_selectedTime != null) {
                         final classTime = TimeOfDay.fromDateTime(classDate);
@@ -386,12 +351,6 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
 
                       if (_selectedClassType != null && classType != null) {
                         if (_selectedClassType != classType) {
-                          return false;
-                        }
-                      }
-
-                      if (_selectedDuration != null && classDuration != null) {
-                        if (_selectedDuration != classDuration) {
                           return false;
                         }
                       }
