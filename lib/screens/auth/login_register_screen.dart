@@ -38,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
-
-  Future<void> createUserWithEmailAndPassword() async {
+Future<void> createUserWithEmailAndPassword() async {
+  if (_controllerName.text.length < 12) {
     try {
       await Auth().createUserWithEmailAndPassword(
         email: _controllerEmail.text,
@@ -47,14 +47,16 @@ class _LoginScreenState extends State<LoginScreen> {
         name: _controllerName.text,
       );
     } on FirebaseAuthException catch (e) {
-      setState(
-        () {
-          errorMessage = e.message;
-        },
-      );
+      setState(() {
+        errorMessage = e.message;
+      });
     }
+  } else {
+    setState(() {
+      errorMessage = 'Name must be less than 12 characters.';
+    });
   }
-
+}
   Widget _entryField(String title, TextEditingController controller) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),

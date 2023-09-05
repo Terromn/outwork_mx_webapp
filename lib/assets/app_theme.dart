@@ -100,7 +100,8 @@ class TeAppThemeData {
     timePickerTheme: const TimePickerThemeData(
       backgroundColor: TeAppColorPalette.black,
       dialHandColor: TeAppColorPalette.green,
-      // dayPeriodColor: TeAppColorPalette.green,
+      dayPeriodColor: TeAppColorPalette.green,
+      
 
       dialBackgroundColor: TeAppColorPalette.blackLight,
       hourMinuteColor: TeAppColorPalette.blackLight,
