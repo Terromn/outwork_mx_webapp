@@ -77,7 +77,7 @@ class TeClassCard extends StatelessWidget {
                 child: Container(
                   width: 18.0,
                   height: 18.0,
-                  decoration: const BoxDecoration(
+                  decoration:  const BoxDecoration(
                     borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(200),
                         bottomRight: Radius.circular(200),
@@ -85,6 +85,7 @@ class TeClassCard extends StatelessWidget {
                         topLeft: Radius.circular(0)),
                     color: TeAppColorPalette.green,
                   ),
+                  child: const Center(child: Icon(Icons.abc)),
                 ),
               ),
             ],
