@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
@@ -132,8 +133,10 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
           return ElevatedButton(
             onPressed: () async {
               final pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime: _selectedTime ?? TimeOfDay.now());
+                context: context,
+                initialTime: _selectedTime ?? TimeOfDay.now(),
+                initialEntryMode: TimePickerEntryMode.input,
+              );
 
               if (pickedTime != null) {
                 setState(() {
@@ -189,6 +192,8 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                               _updateSelectedClassType, "Calistenia"),
                           pickerButton(context, "HIIT",
                               _updateSelectedClassType, "HIIT"),
+                          pickerButton(context, "Kettle Flow",
+                              _updateSelectedClassType, "Kettle Flow"),
                         ],
                       ),
                     )),
@@ -284,7 +289,12 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text("Clases")),
+      appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            "Clases",
+            style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 32),
+          )),
       body: Stack(
         children: [
           Column(
