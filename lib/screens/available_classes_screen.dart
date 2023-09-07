@@ -44,6 +44,24 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
     });
   }
 
+  TimeOfDay _convertTimestampToTimeOfDay(Timestamp timestamp) {
+    final dateTime = timestamp.toDate();
+    return TimeOfDay.fromDateTime(dateTime);
+  }
+
+  DateTime _convertTimestampToDateTime(Timestamp timestamp) {
+    return timestamp.toDate();
+  }
+
+  void resetFilters() {
+    setState(() {
+      _selectedTime = null;
+      _selectedDate = null;
+      _selectedCoach = null;
+      _selectedClassType = null;
+    });
+  }
+
   Widget pickerButton(BuildContext context, String insideText,
       Function updateFilter, var filterValue) {
     return Padding(
@@ -335,20 +353,26 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                         snapshot.data!.docs;
 
                     final filteredDocuments = documents.where((document) {
+                      final classTimestamp =
+                          document['classTimeStamp'] as Timestamp;
+                      final classTime =
+                          _convertTimestampToTimeOfDay(classTimestamp);
                       final classDate =
-                          (document['classTimeStamp'] as Timestamp).toDate();
+                          _convertTimestampToDateTime(classTimestamp);
                       final classCoach = document['classCoach'];
                       final classType = document['classType'];
 
                       if (_selectedTime != null) {
-                        final classTime = TimeOfDay.fromDateTime(classDate);
                         if (_selectedTime != classTime) {
                           return false;
                         }
                       }
 
                       if (_selectedDate != null) {
-                        if (_selectedDate != classDate) {
+                        // You might need to compare dates without time for accurate filtering.
+                        if (_selectedDate?.year != classDate.year ||
+                            _selectedDate?.month != classDate.month ||
+                            _selectedDate?.day != classDate.day) {
                           return false;
                         }
                       }

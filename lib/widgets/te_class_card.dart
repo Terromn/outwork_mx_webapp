@@ -27,17 +27,17 @@ class TeClassCard extends StatelessWidget {
 
   FaIcon getIcon(String classType) {
     if (classType == "Calistenia") {
-      return const FaIcon(FontAwesomeIcons.bolt, color: TeAppColorPalette.black, size: 10,);
+      return const FaIcon(FontAwesomeIcons.bolt, color: TeAppColorPalette.black, size: 8,);
     } else if (classType == "HIIT") {
-      return const FaIcon(FontAwesomeIcons.stopwatch, color: TeAppColorPalette.black, size: 10);
+      return const FaIcon(FontAwesomeIcons.stopwatch, color: TeAppColorPalette.black, size: 8);
     } else if (classType == "Kettle Flow") {
-      return  const FaIcon(FontAwesomeIcons.wind, color: TeAppColorPalette.black, size: 10);
+      return  const FaIcon(FontAwesomeIcons.wind, color: TeAppColorPalette.black, size: 8);
     } else if (classType == "Yoga") {
-      return const FaIcon(FontAwesomeIcons.streetView, color: TeAppColorPalette.black, size: 10);
+      return const FaIcon(FontAwesomeIcons.streetView, color: TeAppColorPalette.black, size: 8);
     }
     
     else {
-      return const FaIcon(FontAwesomeIcons.question, color: TeAppColorPalette.black, size: 10);
+      return const FaIcon(FontAwesomeIcons.question, color: TeAppColorPalette.black, size: 8);
     }
   }
 
@@ -90,8 +90,8 @@ class TeClassCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: -2,
-                right: -2,
+                bottom: 0,
+                right: 0,
                 child: Container(
                   width: 18.0,
                   height: 18.0,
