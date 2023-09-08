@@ -83,6 +83,18 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
         'reservedClasses': _userInfo.reservedClasses,
         'creditsAvailable': _userInfo.creditsAvailable,
       });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: TeAppColorPalette.green,
+        content: Text(
+          'No Tienes Creditos Suficientes',
+          style: TextStyle(
+              color: TeAppColorPalette.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold),
+        ),
+        duration: Duration(seconds: 3),
+      ));
     }
   }
 
@@ -99,8 +111,10 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.classInfo.classType, style: GoogleFonts.inter(
-                          fontSize: 22, fontWeight: FontWeight.bold),),
+          title: Text(
+            widget.classInfo.classType,
+            style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
           // toolbarHeight: TeMediaQuery.getPercentageHeight(context, 6)
         ),
         body: Padding(
