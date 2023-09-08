@@ -1,5 +1,6 @@
 import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+    final _storage = FirebaseStorage.instance;
+      // ignore: unused_field
+      late Reference _storageRef;
+
   late UserModel _userInfo;
 
   final CollectionReference _referenceClasses =
@@ -54,6 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late DateTime _selectedDate;
 
+  
+
   Future<void> _fetchUserData() async {
     try {
       DocumentSnapshot userDataSnapshot = await _userData.get();
@@ -78,8 +86,31 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget _profilePicture(String profilePic, Reference reference) {
+    return FutureBuilder<String>(
+      future: reference.child(profilePic).getDownloadURL(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(TeAppColorPalette.green),
+          );
+        } else if (snapshot.hasError) {
+          return const Text('Error');
+        } else {
+          final imageUrl = snapshot.data;
+          return CircleAvatar(
+            backgroundImage: NetworkImage(imageUrl!),
+            radius: 38,
+          );
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _storageRef = _storage.ref().child('/defaultProfilePictures');
+
     return Scaffold(
       body: Column(
         children: [
@@ -113,10 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ],
                     ),
-                    const CircleAvatar(
-                      radius: 38,
-                      backgroundColor: TeAppColorPalette.green,
-                    )
+                                      _profilePicture(_userInfo.profilePicture, _storageRef),
                   ]),
             ),
           ),
