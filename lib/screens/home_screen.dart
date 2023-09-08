@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           "Creditos Disponibles:  ${_userInfo.creditsAvailable.toString()}",
                           style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w400, fontSize: 12),
+                              fontWeight: FontWeight.w400, fontSize: 16),
                         )
                       ],
                     ),
