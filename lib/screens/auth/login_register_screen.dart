@@ -14,14 +14,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  
   String? errorMessage = '';
   bool isLogin = true;
 
-
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerPasswordConfirmation =
+      TextEditingController();
+
   final TextEditingController _controllerName = TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
@@ -38,29 +38,33 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
-Future<void> createUserWithEmailAndPassword() async {
-  if (_controllerName.text.length < 12) {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-        name: _controllerName.text,
-      );
-    } on FirebaseAuthException catch (e) {
+
+  Future<void> createUserWithEmailAndPassword() async {
+    if (_controllerName.text.length < 12) {
+      try {
+        await Auth().createUserWithEmailAndPassword(
+          email: _controllerEmail.text,
+          password: _controllerPassword.text,
+          name: _controllerName.text,
+        );
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          errorMessage = e.message;
+        });
+      }
+    } else {
       setState(() {
-        errorMessage = e.message;
+        errorMessage = 'Name must be less than 12 characters.';
       });
     }
-  } else {
-    setState(() {
-      errorMessage = 'Name must be less than 12 characters.';
-    });
   }
-}
-  Widget _entryField(String title, TextEditingController controller) {
+
+  Widget _entryField(
+      String title, TextEditingController controller, bool password) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: TextField(
+          obscureText: password,
           controller: controller,
           decoration: InputDecoration(labelText: title)),
     );
@@ -75,13 +79,21 @@ Future<void> createUserWithEmailAndPassword() async {
 
   Widget _submitButton() {
     return ElevatedButton(
-      onPressed:
-          isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
+      onPressed: () {
+        if (_controllerPassword == _controllerPasswordConfirmation) {
+          if (isLogin) {
+            signInWithEmailAndPassword();
+          } else {
+            createUserWithEmailAndPassword();
+          }
+        }
+      },
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Text(
             isLogin ? 'Login' : 'Register',
-            style: const TextStyle(fontSize: 16, color: TeAppColorPalette.black),
+            style:
+                const TextStyle(fontSize: 16, color: TeAppColorPalette.black),
           )),
     );
   }
@@ -93,16 +105,18 @@ Future<void> createUserWithEmailAndPassword() async {
           isLogin = !isLogin;
         });
       },
-      child: Text(isLogin ? 'Register Instead' : 'Login Instead', style: const TextStyle(color: TeAppColorPalette.white),),
+      child: Text(
+        isLogin ? 'Register Instead' : 'Login Instead',
+        style: const TextStyle(color: TeAppColorPalette.white),
+      ),
     );
   }
 
   @override
   void initState() {
     super.initState();
-        FlutterNativeSplash.remove();
+    FlutterNativeSplash.remove();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,25 +124,28 @@ Future<void> createUserWithEmailAndPassword() async {
       backgroundColor: TeAppColorPalette.black,
       body: Center(
         child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                !isLogin ? _entryField(' Name', _controllerName) : const SizedBox(),
-                _entryField(' Email', _controllerEmail),
-                _entryField(' Password', _controllerPassword),
-                _errorMessage(),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _submitButton(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _loginOrRegisterButton(),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              !isLogin
+                  ? _entryField(' Name', _controllerName, false)
+                  : const SizedBox(),
+              _entryField(' Email', _controllerEmail, false),
+              _entryField(' Password', _controllerPassword, true),
+              _entryField(' Password', _controllerPasswordConfirmation, true),
+              _errorMessage(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _submitButton(),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _loginOrRegisterButton(),
+              ),
+            ],
           ),
+        ),
       ),
     );
   }

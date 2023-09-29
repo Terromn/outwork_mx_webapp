@@ -42,7 +42,7 @@ class Auth {
         'name': name,
         'reservedClasses': [],
         'creditsAvailable': 0,
-        'profilePicture': '${Random().nextInt(6)}.png',
+        'profilePicture': '${Random().nextInt(5)}.jpg',
       });
     } else {
       return;
