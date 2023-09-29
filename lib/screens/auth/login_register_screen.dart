@@ -86,7 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             createUserWithEmailAndPassword();
           }
-        }
+        } else {    setState(() {
+        errorMessage = 'Passwords do not match';
+      });}
       },
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
