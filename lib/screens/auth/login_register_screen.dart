@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/screens/auth/auth.dart';
@@ -16,6 +17,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String? errorMessage = '';
   bool isLogin = true;
+
+  bool _obscurePassword = true;
 
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
@@ -59,21 +62,29 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget _entryField(
-      String title, TextEditingController controller, bool password) {
+  Widget _entryField(String title, TextEditingController controller, bool maxLenght) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: TextField(
-          obscureText: password,
+              inputFormatters: maxLenght ? [LengthLimitingTextInputFormatter(12)] : null, // Set maximum length here (12 in this example)
+          obscureText: _obscurePassword,
           controller: controller,
-          decoration: InputDecoration(labelText: title)),
+          decoration: InputDecoration(labelText: title, suffixIcon: IconButton(
+                  icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),)),
     );
   }
 
   Widget _errorMessage() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Text(errorMessage == '' ? '' : "Error: $errorMessage"),
+      child: Text(errorMessage == '' ? '' : "Error: $errorMessage",
+          style: const TextStyle(color: Colors.red)),
     );
   }
 
@@ -86,9 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
           } else {
             createUserWithEmailAndPassword();
           }
-        } else {    setState(() {
-        errorMessage = 'Passwords do not match';
-      });}
+        } else {
+          setState(() {
+            errorMessage = 'Passwords do not match';
+          });
+        }
       },
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -131,11 +144,14 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               !isLogin
-                  ? _entryField(' Name', _controllerName, false)
+                  ? _entryField(' Name', _controllerName, true)
                   : const SizedBox(),
               _entryField(' Email', _controllerEmail, false),
-              _entryField(' Password', _controllerPassword, true),
-              _entryField(' Password', _controllerPasswordConfirmation, true),
+              _entryField(' Password', _controllerPassword, false),
+              !isLogin
+                  ? _entryField('Repeat Password',
+                      _controllerPasswordConfirmation, false)
+                  : const SizedBox(),
               _errorMessage(),
               Padding(
                 padding: const EdgeInsets.all(8.0),
