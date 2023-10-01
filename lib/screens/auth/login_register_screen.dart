@@ -62,28 +62,35 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget _entryField(String title, TextEditingController controller, bool maxLenght) {
+  Widget _entryField(String title, TextEditingController controller,
+      bool maxLenght, bool passwordField) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       child: TextField(
-              inputFormatters: maxLenght ? [LengthLimitingTextInputFormatter(12)] : null, // Set maximum length here (12 in this example)
-          obscureText: _obscurePassword,
-          controller: controller,
-          decoration: InputDecoration(labelText: title, suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
-                ),)),
+        inputFormatters:
+            maxLenght ? [LengthLimitingTextInputFormatter(12)] : null,
+        obscureText: passwordField? _obscurePassword : passwordField,
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: title,
+          suffixIcon: passwordField? IconButton(
+            icon: Icon(
+                _obscurePassword ? Icons.visibility : Icons.visibility_off, color: TeAppColorPalette.white),
+            onPressed: () {
+              setState(() {
+                _obscurePassword = !_obscurePassword;
+              });
+            },
+          ) : null,
+        ),
+      ),
     );
   }
 
   Widget _errorMessage() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Text(errorMessage == '' ? '' : "Error: $errorMessage",
+      child: Text(errorMessage == '' ? '' : "$errorMessage",
           style: const TextStyle(color: Colors.red)),
     );
   }
@@ -91,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _submitButton() {
     return ElevatedButton(
       onPressed: () {
-        if (_controllerPassword == _controllerPasswordConfirmation) {
+        if (_controllerPassword.text == _controllerPasswordConfirmation.text) {
           if (isLogin) {
             signInWithEmailAndPassword();
           } else {
@@ -144,13 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               !isLogin
-                  ? _entryField(' Name', _controllerName, true)
+                  ? _entryField(' Name', _controllerName, true, false)
                   : const SizedBox(),
-              _entryField(' Email', _controllerEmail, false),
-              _entryField(' Password', _controllerPassword, false),
+              _entryField(' Email', _controllerEmail, false, false),
+              _entryField(' Password', _controllerPassword, false, true),
               !isLogin
                   ? _entryField('Repeat Password',
-                      _controllerPasswordConfirmation, false)
+                      _controllerPasswordConfirmation, false, true)
                   : const SizedBox(),
               _errorMessage(),
               Padding(

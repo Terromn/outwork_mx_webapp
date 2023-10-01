@@ -9,6 +9,7 @@ import 'package:outwork_web_app/models/class_info_model.dart';
 import 'package:outwork_web_app/screens/auth/auth.dart';
 import 'package:outwork_web_app/screens/available_classes_screen.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
+import 'package:outwork_web_app/utils/qr_code_generator.dart';
 import 'package:outwork_web_app/widgets/te_class_card.dart';
 
 import '../assets/app_color_palette.dart';
@@ -22,10 +23,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-    final _storage = FirebaseStorage.instance;
-      // ignore: unused_field
-      late Reference _storageRef;
+  final _storage = FirebaseStorage.instance;
+  // ignore: unused_field
+  late Reference _storageRef;
 
   late UserModel _userInfo;
 
@@ -60,8 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late DateTime _selectedDate;
 
-  
-
   Future<void> _fetchUserData() async {
     try {
       DocumentSnapshot userDataSnapshot = await _userData.get();
@@ -75,8 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
             reservedClasses:
                 List<String>.from(userDataSnapshot['reservedClasses']),
           );
-
-          print(_userInfo.reservedClasses);
         });
       }
     } catch (error) {
@@ -98,9 +94,12 @@ class _HomeScreenState extends State<HomeScreen> {
           return const Text('Error');
         } else {
           final imageUrl = snapshot.data;
-          return CircleAvatar(
-            backgroundImage: NetworkImage(imageUrl!),
-            radius: 38,
+          return GestureDetector(
+            onTap: () => _showQrCode(context, _userInfo.name, Auth().getCurrentUserUID()),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(imageUrl!),
+              radius: 38,
+            ),
           );
         }
       },
@@ -149,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ],
                     ),
-                                      _profilePicture(_userInfo.profilePicture, _storageRef),
+                    _profilePicture(_userInfo.profilePicture, _storageRef),
                   ]),
             ),
           ),
@@ -416,4 +415,44 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+void _showQrCode(BuildContext context, String userName, dynamic data) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+          color: TeAppColorPalette.black,
+          height: TeMediaQuery.getPercentageHeight(context, 75),
+          width: TeMediaQuery.getPercentageWidth(context, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TeQRCodeGenerator(data: data),
+              const SizedBox(
+                height: 24,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: TeAppColorPalette.green,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Text(
+                    userName,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: TeAppColorPalette.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ));
+    },
+  );
 }
