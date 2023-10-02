@@ -444,7 +444,7 @@ void _showQrCode(BuildContext context, String userName, dynamic data) {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Text(
                     userName,
-                    style: const TextStyle(
+                    style:  GoogleFonts.inter(
                       fontSize: 18,
                       color: TeAppColorPalette.black,
                       fontWeight: FontWeight.bold,
