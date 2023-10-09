@@ -98,17 +98,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _submitButton() {
     return ElevatedButton(
       onPressed: () {
-        if (_controllerPassword.text == _controllerPasswordConfirmation.text) {
           if (isLogin) {
             signInWithEmailAndPassword();
           } else {
+        if (_controllerPassword.text == _controllerPasswordConfirmation.text) {
+
             createUserWithEmailAndPassword();
-          }
-        } else {
+          } else {
           setState(() {
             errorMessage = 'Passwords do not match';
           });
-        }
+        } }
+        
       },
       child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
