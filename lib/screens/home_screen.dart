@@ -78,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (error) {
-      // Handle error if fetching user data fails
       // ignore: avoid_print
       print('Error fetching user data: $error');
     }
@@ -131,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             decoration: const BoxDecoration(
@@ -172,12 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Expanded(
-              child: SingleChildScrollView(
-            child: Column(children: [
-              const SizedBox(height: 12),
-              SizedBox(
-                height: TeMediaQuery.getPercentageHeight(context, 65),
-                child: Column(
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -318,117 +317,42 @@ class _HomeScreenState extends State<HomeScreen> {
                         )),
                   ],
                 ),
-              ),
-              Container(
-                height: TeMediaQuery.getPercentageHeight(context, 65),
-                decoration: const BoxDecoration(
-                  color: TeAppColorPalette.black,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () =>
+                _showReservedClasses(context, _streamClasses, _userInfo),
+            child: Container(
+              height: 80,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: TeAppColorPalette.green,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(TeAppThemeData.contentMargin),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Clases reservadas:',
-                            style: GoogleFonts.inter(
-                                fontWeight: FontWeight.bold, fontSize: 24),
-                          ),
-                          // ElevatedButton(
-                          //     onPressed: null,
-                          //     child: Text(
-                          //       'VER',
-                          //       style: GoogleFonts.inter(
-                          //           fontSize: 12,
-                          //           color: Colors.black,
-                          //           fontWeight: FontWeight.bold),
-                          //     ))
-                        ],
-                      ),
-                      Expanded(
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: _streamClasses,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              return const Center(
-                                child: Text(
-                                    'Lo sentimos! No podemos cargar la informacion en este momento'),
-                              );
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          TeAppColorPalette.green)));
-                            }
-
-                            final List<QueryDocumentSnapshot> documents =
-                                snapshot.data!.docs;
-
-                            final filteredDocuments =
-                                documents.where((document) {
-                              String documentID = document.id;
-                              return _userInfo.reservedClasses
-                                  .contains(documentID);
-                            }).toList();
-
-                            return ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              itemCount: filteredDocuments.length,
-                              itemBuilder: (context, index) {
-                                final documentData = filteredDocuments[index];
-
-                                // ignore: unused_local_variable
-                                String id = documents[index].id;
-                                // ignore: avoid_init_to_null, unused_local_variable
-                                NetworkImage? classCoachImage = null;
-                                String classCoach = documentData['classCoach'];
-                                String classDesription =
-                                    documentData['classDescription'];
-                                double classDuration =
-                                    documentData['classDuration'];
-                                int classLimitSpaces =
-                                    documentData['classLimitSpaces'];
-                                String classType = documentData['classType'];
-                                DateTime classDate =
-                                    (documentData['classTimeStamp']
-                                            as Timestamp)
-                                        .toDate();
-
-                                ClassInfoModel classInfo = ClassInfoModel(
-                                  documentID: id,
-                                  classCoach: classCoach,
-                                  classDesription: classDesription,
-                                  classDuration: classDuration,
-                                  classDate: classDate,
-                                  classLimitSpaces: classLimitSpaces,
-                                  classType: classType,
-                                );
-
-                                return TeClassCard(
-                                  reserving: false,
-                                  light: true,
-                                  classInfo: classInfo,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      )
-                    ],
+                boxShadow: [
+                  BoxShadow(
+                    color: TeAppColorPalette.green, // Shadow color
+                    blurRadius: 18, // Spread radius of the shadow
+                    offset: Offset(
+                        0, 2), // Offset of the shadow (horizontal, vertical)
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Text(
+                  "RESERVACIONES",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: TeAppColorPalette.black,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ]),
-          )),
+            ),
+          )
         ],
       ),
     );
@@ -471,6 +395,76 @@ void _showQrCode(BuildContext context, String userName, dynamic data) {
               ),
             ],
           ));
+    },
+  );
+}
+
+void _showReservedClasses(
+    BuildContext context, dynamic stream, UserModel userInfo) {
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return StreamBuilder<QuerySnapshot>(
+        stream: stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                  'Lo sentimos! No podemos cargar la informacion en este momento'),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        TeAppColorPalette.green)));
+          }
+
+          final List<QueryDocumentSnapshot> documents = snapshot.data!.docs;
+
+          final filteredDocuments = documents.where((document) {
+            String documentID = document.id;
+            return userInfo.reservedClasses.contains(documentID);
+          }).toList();
+
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: filteredDocuments.length,
+            itemBuilder: (context, index) {
+              final documentData = filteredDocuments[index];
+
+              // ignore: unused_local_variable
+              String id = documents[index].id;
+              // ignore: avoid_init_to_null, unused_local_variable
+              NetworkImage? classCoachImage = null;
+              String classCoach = documentData['classCoach'];
+              String classDesription = documentData['classDescription'];
+              double classDuration = documentData['classDuration'];
+              int classLimitSpaces = documentData['classLimitSpaces'];
+              String classType = documentData['classType'];
+              DateTime classDate =
+                  (documentData['classTimeStamp'] as Timestamp).toDate();
+
+              ClassInfoModel classInfo = ClassInfoModel(
+                documentID: id,
+                classCoach: classCoach,
+                classDesription: classDesription,
+                classDuration: classDuration,
+                classDate: classDate,
+                classLimitSpaces: classLimitSpaces,
+                classType: classType,
+              );
+
+              return TeClassCard(
+                reserving: false,
+                light: true,
+                classInfo: classInfo,
+              );
+            },
+          );
+        },
+      );
     },
   );
 }

@@ -1,0 +1,108 @@
+Container(
+                height: TeMediaQuery.getPercentageHeight(context, 65),
+                decoration: const BoxDecoration(
+                  color: TeAppColorPalette.black,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(TeAppThemeData.contentMargin),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Clases reservadas:',
+                            style: GoogleFonts.inter(
+                                fontWeight: FontWeight.bold, fontSize: 24),
+                          ),
+                          // ElevatedButton(
+                          //     onPressed: null,
+                          //     child: Text(
+                          //       'VER',
+                          //       style: GoogleFonts.inter(
+                          //           fontSize: 12,
+                          //           color: Colors.black,
+                          //           fontWeight: FontWeight.bold),
+                          //     ))
+                        ],
+                      ),
+                      Expanded(
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: _streamClasses,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return const Center(
+                                child: Text(
+                                    'Lo sentimos! No podemos cargar la informacion en este momento'),
+                              );
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          TeAppColorPalette.green)));
+                            }
+
+                            final List<QueryDocumentSnapshot> documents =
+                                snapshot.data!.docs;
+
+                            final filteredDocuments =
+                                documents.where((document) {
+                              String documentID = document.id;
+                              return _userInfo.reservedClasses
+                                  .contains(documentID);
+                            }).toList();
+
+                            return ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: filteredDocuments.length,
+                              itemBuilder: (context, index) {
+                                final documentData = filteredDocuments[index];
+
+                                // ignore: unused_local_variable
+                                String id = documents[index].id;
+                                // ignore: avoid_init_to_null, unused_local_variable
+                                NetworkImage? classCoachImage = null;
+                                String classCoach = documentData['classCoach'];
+                                String classDesription =
+                                    documentData['classDescription'];
+                                double classDuration =
+                                    documentData['classDuration'];
+                                int classLimitSpaces =
+                                    documentData['classLimitSpaces'];
+                                String classType = documentData['classType'];
+                                DateTime classDate =
+                                    (documentData['classTimeStamp']
+                                            as Timestamp)
+                                        .toDate();
+
+                                ClassInfoModel classInfo = ClassInfoModel(
+                                  documentID: id,
+                                  classCoach: classCoach,
+                                  classDesription: classDesription,
+                                  classDuration: classDuration,
+                                  classDate: classDate,
+                                  classLimitSpaces: classLimitSpaces,
+                                  classType: classType,
+                                );
+
+                                return TeClassCard(
+                                  reserving: false,
+                                  light: true,
+                                  classInfo: classInfo,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
