@@ -3,7 +3,7 @@ class ClassInfoModel {
   late final String documentID;
   late final String classCoach;
   late final String classDesription;
-  late final int classDuration;
+  late final double classDuration;
   late final int classLimitSpaces;
   late final String classType;
   late final DateTime classDate;

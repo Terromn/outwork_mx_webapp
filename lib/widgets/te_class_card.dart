@@ -27,20 +27,25 @@ class TeClassCard extends StatelessWidget {
 
   FaIcon getIcon(String classType) {
     if (classType == "Calistenia") {
-      return const FaIcon(FontAwesomeIcons.bolt, color: TeAppColorPalette.black, size: 8,);
+      return const FaIcon(
+        FontAwesomeIcons.bolt,
+        color: TeAppColorPalette.black,
+        size: 8,
+      );
     } else if (classType == "HIIT") {
-      return const FaIcon(FontAwesomeIcons.stopwatch, color: TeAppColorPalette.black, size: 8);
+      return const FaIcon(FontAwesomeIcons.stopwatch,
+          color: TeAppColorPalette.black, size: 8);
     } else if (classType == "Kettle Flow") {
-      return  const FaIcon(FontAwesomeIcons.wind, color: TeAppColorPalette.black, size: 8);
+      return const FaIcon(FontAwesomeIcons.wind,
+          color: TeAppColorPalette.black, size: 8);
     } else if (classType == "Yoga") {
-      return const FaIcon(FontAwesomeIcons.streetView, color: TeAppColorPalette.black, size: 8);
-    }
-    
-    else {
-      return const FaIcon(FontAwesomeIcons.question, color: TeAppColorPalette.black, size: 8);
+      return const FaIcon(FontAwesomeIcons.streetView,
+          color: TeAppColorPalette.black, size: 8);
+    } else {
+      return const FaIcon(FontAwesomeIcons.question,
+          color: TeAppColorPalette.black, size: 8);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -67,17 +72,17 @@ class TeClassCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(100.0),
                 child: Container(
-                  color: TeAppColorPalette.black,
+                  color: light? TeAppColorPalette.black : TeAppColorPalette.blackLight,
                   height: 48,
                   width: 48,
                   child: FutureBuilder<String>(
                     future: getCoachImageUrl(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return const SizedBox();
                       }
                       if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
+                        return const Center( child: Icon(Icons.error_outline_outlined),);
                       }
                       final imageUrl = snapshot.data;
 
@@ -95,7 +100,7 @@ class TeClassCard extends StatelessWidget {
                 child: Container(
                   width: 18.0,
                   height: 18.0,
-                  decoration:  const BoxDecoration(
+                  decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(200),
                         bottomRight: Radius.circular(200),

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:outwork_web_app/assets/app_theme.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
@@ -88,15 +89,32 @@ class _HomeScreenState extends State<HomeScreen> {
       future: reference.child(profilePic).getDownloadURL(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(TeAppColorPalette.green),
-          );
+          return GestureDetector(
+              onTap: () => _showQrCode(
+                  context, _userInfo.name, Auth().getCurrentUserUID()),
+              child: const Center(
+                child: CircleAvatar(
+                  radius: 38,
+                  backgroundColor: TeAppColorPalette.blackLight,
+                  child: Icon(FontAwesomeIcons.user, size: 24),
+                ),
+              ));
         } else if (snapshot.hasError) {
-          return const Text('Error');
+          return GestureDetector(
+              onTap: () => _showQrCode(
+                  context, _userInfo.name, Auth().getCurrentUserUID()),
+              child: const Center(
+                child: CircleAvatar(
+                  radius: 38,
+                  backgroundColor: TeAppColorPalette.blackLight,
+                  child: Icon(FontAwesomeIcons.user, size: 24),
+                ),
+              ));
         } else {
           final imageUrl = snapshot.data;
           return GestureDetector(
-            onTap: () => _showQrCode(context, _userInfo.name, Auth().getCurrentUserUID()),
+            onTap: () => _showQrCode(
+                context, _userInfo.name, Auth().getCurrentUserUID()),
             child: CircleAvatar(
               backgroundImage: NetworkImage(imageUrl!),
               radius: 38,
@@ -196,8 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CalendarTimeline(
                         initialDate: _selectedDate,
                         firstDate: DateTime.now(),
-                        lastDate:
-                            DateTime.now().add(const Duration(days: 365 * 4)),
+                        lastDate: DateTime.now().add(const Duration(days: 6)),
                         // ignore: avoid_print
                         onDateSelected: (date) {
                           setState(() {
@@ -269,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       documentData['classCoach'];
                                   String classDesription =
                                       documentData['classDescription'];
-                                  int classDuration =
+                                  double classDuration =
                                       documentData['classDuration'];
                                   int classLimitSpaces =
                                       documentData['classLimitSpaces'];
@@ -376,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 String classCoach = documentData['classCoach'];
                                 String classDesription =
                                     documentData['classDescription'];
-                                int classDuration =
+                                double classDuration =
                                     documentData['classDuration'];
                                 int classLimitSpaces =
                                     documentData['classLimitSpaces'];
@@ -444,7 +461,7 @@ void _showQrCode(BuildContext context, String userName, dynamic data) {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Text(
                     userName,
-                    style:  GoogleFonts.inter(
+                    style: const TextStyle(
                       fontSize: 18,
                       color: TeAppColorPalette.black,
                       fontWeight: FontWeight.bold,

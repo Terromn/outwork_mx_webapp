@@ -402,7 +402,7 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                         String classCoach = documentData['classCoach'];
                         String classDesription =
                             documentData['classDescription'];
-                        int classDuration = documentData['classDuration'];
+                        double classDuration = documentData['classDuration'];
                         int classLimitSpaces = documentData['classLimitSpaces'];
                         String classType = documentData['classType'];
                         DateTime classDate =
