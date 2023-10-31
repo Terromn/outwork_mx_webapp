@@ -78,13 +78,19 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
           content: const Text('Are you sure you want to reserve this class?'),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('Cancel'),
+               style: ElevatedButton.styleFrom(
+                  backgroundColor: TeAppColorPalette.black),
+              child: const Text('Cancel',
+                  style: TextStyle(color: TeAppColorPalette.white)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: const Text('Confirm'),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: TeAppColorPalette.black),
+              child: const Text('Confirm',
+                  style: TextStyle(color: TeAppColorPalette.white)),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
                 reserveClass(context); // Pass the context to reserveClass

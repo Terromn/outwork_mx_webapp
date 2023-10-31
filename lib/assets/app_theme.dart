@@ -27,6 +27,27 @@ class TeAppThemeData {
       ),
     ),
 
+    dialogTheme: DialogTheme(
+      backgroundColor: TeAppColorPalette.black,
+      titleTextStyle: TextStyle(
+        color: TeAppColorPalette.white,
+        fontSize: 26,
+        fontFamily: _teFont,
+        fontWeight: FontWeight.bold,
+      ),  
+      contentTextStyle: TextStyle(
+        color: TeAppColorPalette.white,
+        fontSize: 18,
+        fontFamily: _teFont,
+        fontWeight: FontWeight.bold,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      alignment: Alignment.center
+      
+    ),
+
     // BOTTOM NAV BAR //
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: TeAppColorPalette.green,
@@ -101,7 +122,6 @@ class TeAppThemeData {
       backgroundColor: TeAppColorPalette.black,
       dialHandColor: TeAppColorPalette.green,
       dayPeriodColor: TeAppColorPalette.green,
-      
 
       dialBackgroundColor: TeAppColorPalette.blackLight,
       hourMinuteColor: TeAppColorPalette.blackLight,
@@ -137,19 +157,16 @@ class TeAppThemeData {
           return TeAppColorPalette.black;
         }
       }),
-      dayForegroundColor:  MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+      dayForegroundColor:
+          MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
         if (states.contains(MaterialState.selected)) {
           return TeAppColorPalette.black;
         } else {
           return TeAppColorPalette.white;
         }
       }),
-
-      
-
       surfaceTintColor: TeAppColorPalette.green,
       rangePickerHeaderForegroundColor: TeAppColorPalette.white,
-
     ),
 
     splashColor: TeAppColorPalette.green,

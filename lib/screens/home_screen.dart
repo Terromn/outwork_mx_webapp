@@ -85,44 +85,15 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _profilePicture(String profilePic, Reference reference) {
-    return FutureBuilder<String>(
-      future: reference.child(profilePic).getDownloadURL(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return GestureDetector(
-              onTap: () => _showQrCode(
-                  context, _userInfo.name, Auth().getCurrentUserUID()),
-              child: const Center(
-                child: CircleAvatar(
-                  radius: 38,
-                  backgroundColor: TeAppColorPalette.blackLight,
-                  child: Icon(FontAwesomeIcons.user, size: 24),
-                ),
-              ));
-        } else if (snapshot.hasError) {
-          return GestureDetector(
-              onTap: () => _showQrCode(
-                  context, _userInfo.name, Auth().getCurrentUserUID()),
-              child: const Center(
-                child: CircleAvatar(
-                  radius: 38,
-                  backgroundColor: TeAppColorPalette.blackLight,
-                  child: Icon(FontAwesomeIcons.user, size: 24),
-                ),
-              ));
-        } else {
-          final imageUrl = snapshot.data;
-          return GestureDetector(
+    return GestureDetector(
             onTap: () => _showQrCode(
                 context, _userInfo.name, Auth().getCurrentUserUID()),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(imageUrl!),
+            child:  CircleAvatar(
+              backgroundColor: TeAppColorPalette.black,
+              backgroundImage: AssetImage('defaultProfilePictures/${_userInfo.profilePicture}'),
               radius: 38,
             ),
           );
-        }
-      },
-    );
   }
 
   @override
