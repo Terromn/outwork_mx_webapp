@@ -69,15 +69,43 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
     }
   }
 
-  bool canReserveClass() {
-    return _userInfo.creditsAvailable > 0;
+  void _showConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: const Text('Are you sure you want to reserve this class?'),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Confirm'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                reserveClass(context); // Pass the context to reserveClass
+                Navigator.pop(context, true);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void reserveClass() {
+  bool canReserveClass() {
+    return _userInfo.creditsAvailable > 0 || widget.classInfo.classCost == 0;
+  }
+
+  void reserveClass(BuildContext context) {
     if (canReserveClass()) {
       setState(() {
         _userInfo.reservedClasses.add(widget.classInfo.documentID);
-        _userInfo.creditsAvailable--;
+        _userInfo.creditsAvailable -= widget.classInfo.classCost;
       });
       _userData.update({
         'reservedClasses': _userInfo.reservedClasses,
@@ -86,12 +114,14 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: TeAppColorPalette.green,
-        content: Text(
-          'No Tienes Creditos Suficientes',
-          style: TextStyle(
-              color: TeAppColorPalette.black,
-              fontSize: 16,
-              fontWeight: FontWeight.bold),
+        content: Center(
+          child: Text(
+            'No Tienes Creditos Suficientes',
+            style: TextStyle(
+                color: TeAppColorPalette.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold),
+          ),
         ),
         duration: Duration(seconds: 3),
       ));
@@ -229,11 +259,11 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       await _fetchUserData();
+                      final currentContext = context;
                       // ignore: unnecessary_null_comparison
                       if (_userInfo != null) {
-                        reserveClass();
                         // ignore: use_build_context_synchronously
-                        Navigator.pop(context, true); // Pop the current screen
+                        _showConfirmationDialog(currentContext);
                       } else {
                         // ignore: avoid_print
                         print("Error fetching user data or user data is null.");

@@ -7,10 +7,11 @@ class ClassInfoModel {
   late final int classLimitSpaces;
   late final String classType;
   late final DateTime classDate;
+  late final int classCost;
   late final bool light;
 
   ClassInfoModel({
-    // required this.classCoachImage,
+    required this.classCost,
     required this.documentID,
     required this.classCoach,
     required this.classDesription,

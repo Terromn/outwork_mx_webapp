@@ -23,7 +23,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   final _storage = FirebaseStorage.instance;
   // ignore: unused_field
   late Reference _storageRef;
@@ -126,6 +127,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     _storageRef = _storage.ref().child('/defaultProfilePictures');
 
     return Scaffold(
@@ -213,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CalendarTimeline(
                         initialDate: _selectedDate,
                         firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 6)),
+                        lastDate: DateTime.now().add(const Duration(days: 8)),
                         // ignore: avoid_print
                         onDateSelected: (date) {
                           setState(() {
@@ -222,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         leftMargin: TeAppThemeData.contentMargin,
                         dayNameColor: TeAppColorPalette.black,
-                        monthColor: TeAppColorPalette.blackLight,
+                        monthColor: TeAppColorPalette.white,
                         dayColor: TeAppColorPalette.white,
                         activeDayColor: TeAppColorPalette.black,
                         activeBackgroundDayColor: TeAppColorPalette.green,
@@ -290,6 +293,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   int classLimitSpaces =
                                       documentData['classLimitSpaces'];
                                   String classType = documentData['classType'];
+                                  int classCost = documentData['classCost'];
+
                                   DateTime classDate =
                                       (documentData['classTimeStamp']
                                               as Timestamp)
@@ -303,6 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     classDate: classDate,
                                     classLimitSpaces: classLimitSpaces,
                                     classType: classType,
+                                    classCost: classCost,
                                   );
 
                                   return TeClassCard(
@@ -321,8 +327,86 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           GestureDetector(
-            onTap: () =>
-                _showReservedClasses(context, _streamClasses, _userInfo),
+            onTap: () => {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    color: TeAppColorPalette.black,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _streamClasses,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Icon(FontAwesomeIcons.circleExclamation,
+                                size: 48),
+                          );
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      TeAppColorPalette.green)));
+                        }
+
+                        final List<QueryDocumentSnapshot> documents =
+                            snapshot.data!.docs;
+
+                        final filteredDocuments = documents.where((document) {
+                          String documentID = document.id;
+                          return _userInfo.reservedClasses.contains(documentID);
+                        }).toList();
+
+                        return ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: filteredDocuments.length,
+                          itemBuilder: (context, index) {
+                            final documentData = filteredDocuments[index];
+
+                            // ignore: unused_local_variable
+                            String id = documents[index].id;
+                            // ignore: avoid_init_to_null, unused_local_variable
+                            NetworkImage? classCoachImage = null;
+                            String classCoach = documentData['classCoach'];
+                            String classDesription =
+                                documentData['classDescription'];
+                            double classDuration =
+                                documentData['classDuration'];
+                            int classLimitSpaces =
+                                documentData['classLimitSpaces'];
+                            String classType = documentData['classType'];
+                            int classCost = documentData['classCost'];
+
+                            DateTime classDate =
+                                (documentData['classTimeStamp'] as Timestamp)
+                                    .toDate();
+
+                            ClassInfoModel classInfo = ClassInfoModel(
+                              documentID: id,
+                              classCoach: classCoach,
+                              classDesription: classDesription,
+                              classDuration: classDuration,
+                              classDate: classDate,
+                              classLimitSpaces: classLimitSpaces,
+                              classType: classType,
+                              classCost: classCost,
+                            );
+
+                            return TeClassCard(
+                              reserving: false,
+                              light: true,
+                              classInfo: classInfo,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  );
+                },
+              )
+            },
             child: Container(
               height: 80,
               width: double.infinity,
@@ -337,14 +421,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: TeAppColorPalette.green, // Shadow color
                     blurRadius: 18, // Spread radius of the shadow
                     offset: Offset(
-                        0, 2), // Offset of the shadow (horizontal, vertical)
+                        0, 4), // Offset of the shadow (horizontal, vertical)
                   ),
                 ],
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   "RESERVACIONES",
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 18,
                     color: TeAppColorPalette.black,
                     fontWeight: FontWeight.bold,
@@ -357,6 +441,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 void _showQrCode(BuildContext context, String userName, dynamic data) {
@@ -395,76 +482,6 @@ void _showQrCode(BuildContext context, String userName, dynamic data) {
               ),
             ],
           ));
-    },
-  );
-}
-
-void _showReservedClasses(
-    BuildContext context, dynamic stream, UserModel userInfo) {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      return StreamBuilder<QuerySnapshot>(
-        stream: stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                  'Lo sentimos! No podemos cargar la informacion en este momento'),
-            );
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        TeAppColorPalette.green)));
-          }
-
-          final List<QueryDocumentSnapshot> documents = snapshot.data!.docs;
-
-          final filteredDocuments = documents.where((document) {
-            String documentID = document.id;
-            return userInfo.reservedClasses.contains(documentID);
-          }).toList();
-
-          return ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: filteredDocuments.length,
-            itemBuilder: (context, index) {
-              final documentData = filteredDocuments[index];
-
-              // ignore: unused_local_variable
-              String id = documents[index].id;
-              // ignore: avoid_init_to_null, unused_local_variable
-              NetworkImage? classCoachImage = null;
-              String classCoach = documentData['classCoach'];
-              String classDesription = documentData['classDescription'];
-              double classDuration = documentData['classDuration'];
-              int classLimitSpaces = documentData['classLimitSpaces'];
-              String classType = documentData['classType'];
-              DateTime classDate =
-                  (documentData['classTimeStamp'] as Timestamp).toDate();
-
-              ClassInfoModel classInfo = ClassInfoModel(
-                documentID: id,
-                classCoach: classCoach,
-                classDesription: classDesription,
-                classDuration: classDuration,
-                classDate: classDate,
-                classLimitSpaces: classLimitSpaces,
-                classType: classType,
-              );
-
-              return TeClassCard(
-                reserving: false,
-                light: true,
-                classInfo: classInfo,
-              );
-            },
-          );
-        },
-      );
     },
   );
 }

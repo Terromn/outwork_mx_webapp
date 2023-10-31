@@ -58,6 +58,7 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
       _selectedTime = null;
       _selectedDate = null;
       _selectedCoach = null;
+  
       _selectedClassType = null;
     });
   }
@@ -405,6 +406,8 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                         double classDuration = documentData['classDuration'];
                         int classLimitSpaces = documentData['classLimitSpaces'];
                         String classType = documentData['classType'];
+                        int classCost = documentData['classCost'];
+
                         DateTime classDate =
                             (documentData['classTimeStamp'] as Timestamp)
                                 .toDate();
@@ -416,6 +419,7 @@ class _AvailableClassesScreenState extends State<AvailableClassesScreen> {
                           classDuration: classDuration,
                           classDate: classDate,
                           classLimitSpaces: classLimitSpaces,
+                          classCost: classCost,
                           classType: classType,
                         );
 
