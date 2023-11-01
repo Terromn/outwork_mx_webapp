@@ -6,6 +6,7 @@ import 'package:outwork_web_app/assets/app_color_palette.dart';
 import 'package:outwork_web_app/models/class_info_model.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:outwork_web_app/screens/home_screen.dart';
 import 'package:outwork_web_app/utils/get_media_query.dart';
 
 import '../models/user_model.dart';
@@ -74,14 +75,22 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmation'),
-          content: const Text('Are you sure you want to reserve this class?'),
+          title: Text(
+            'Confirmacion',
+            style: GoogleFonts.inter(),
+          ),
+          content: Text(
+            '¿Estas seguro de que quieres reservar la clase de ${widget.classInfo.classType}?',
+            style: GoogleFonts.inter(),
+          ),
           actions: <Widget>[
             ElevatedButton(
-               style: ElevatedButton.styleFrom(
+              style: ElevatedButton.styleFrom(
                   backgroundColor: TeAppColorPalette.black),
-              child: const Text('Cancel',
-                  style: TextStyle(color: TeAppColorPalette.white)),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.inter(),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -89,11 +98,22 @@ class _ClassInformationScreenState extends State<ClassInformationScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: TeAppColorPalette.black),
-              child: const Text('Confirm',
-                  style: TextStyle(color: TeAppColorPalette.white)),
+              child: Text(
+                'Confirmar',
+                style: GoogleFonts.inter(),
+              ),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
                 reserveClass(context); // Pass the context to reserveClass
+
+                // Check if the reservation was successful before triggering confetti.
+                if (canReserveClass()) {
+                  playConfetti();
+                  Future.delayed(const Duration(seconds: 2), () {
+                    stopConfetti();
+                  });
+                }
+
                 Navigator.pop(context, true);
               },
             ),

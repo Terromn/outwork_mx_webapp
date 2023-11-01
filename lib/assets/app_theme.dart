@@ -45,7 +45,7 @@ class TeAppThemeData {
         borderRadius: BorderRadius.circular(20),
       ),
       alignment: Alignment.center
-      
+
     ),
 
     // BOTTOM NAV BAR //
